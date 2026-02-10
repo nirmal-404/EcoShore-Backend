@@ -68,7 +68,6 @@ const findOrCreateGoogleUser = async (profile) => {
     }
   }
 
-
   return await User.create({
     googleId: profile.id,
     email,

@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generateToken } = require('../config/jwt');
 
@@ -7,10 +8,12 @@ const registerUser = async ({ email, password, role }) => {
     throw new Error('USER_EXISTS');
   }
 
+  const hashed = await bcrypt.hash(password, 10);
+
   const user = new User({
     email,
-    password,
-    role: role || 'customer',
+    password: hashed,
+    role: role || 'volunteer',
   });
 
   await user.save();
@@ -33,7 +36,7 @@ const loginUser = async ({ email, password }) => {
     throw new Error('INVALID_CREDENTIALS');
   }
 
-  const isMatch = await user.matchPassword(password);
+  const isMatch = bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error('INVALID_CREDENTIALS');
   }
@@ -65,11 +68,12 @@ const findOrCreateGoogleUser = async (profile) => {
     }
   }
 
+
   return await User.create({
     googleId: profile.id,
     email,
     name: profile.displayName,
-    role: 'customer',
+    role: 'volunteer',
   });
 };
 

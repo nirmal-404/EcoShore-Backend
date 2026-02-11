@@ -3,10 +3,10 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/auth.routes');
+const authRoutes = require('./interfaces/http/routes/auth.routes');
 
 dotenv.config();
-require('./config/google.passport.js');
+require('./infrastructure/auth/google.passport');
 
 connectDB();
 

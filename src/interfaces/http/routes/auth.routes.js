@@ -1,12 +1,16 @@
+/**
+ * Auth Routes - Interface Layer (HTTP)
+ * Defines authentication routes and their handlers
+ */
 const express = require('express');
 const passport = require('passport');
-const validate = require('../middleware/validate');
-const auth = require('../middleware/auth');
-const authController = require('../controller/auth.controller');
+const validate = require('../middleware/validate.middleware');
+const auth = require('../middleware/auth.middleware');
+const authController = require('../controllers/auth.controller');
 const {
   registerSchema,
   loginSchema,
-} = require('../validation/auth.validation');
+} = require('./validation/auth.validation');
 
 const router = express.Router();
 

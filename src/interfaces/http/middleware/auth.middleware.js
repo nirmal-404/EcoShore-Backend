@@ -1,3 +1,7 @@
+/**
+ * Auth Middleware - Interface Layer (HTTP)
+ * JWT authentication and RBAC middleware
+ */
 const jwt = require('jsonwebtoken');
 
 const auth = (roles = []) => {

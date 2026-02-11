@@ -1,5 +1,9 @@
-const authService = require('../service/auth.service');
-const { generateToken } = require('../config/jwt');
+/**
+ * Auth Controller - Interface Layer (HTTP)
+ * Handles HTTP requests and responses for authentication
+ */
+const authService = require('../../../application/services/auth.service');
+const { generateToken } = require('../../../config/jwt');
 
 const register = async (req, res) => {
   try {
@@ -27,16 +31,26 @@ const login = async (req, res) => {
 
 const googleCallback = (req, res) => {
   const user = req.user;
-  const token = generateToken(user);
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   res.redirect(`${frontendUrl}/login?token=${token}`);
 };
 
 const getMe = async (req, res) => {
-  const User = require('../models/User');
-  const user = await User.findById(req.user.id).select('-password');
-  res.json({ user, token: req.token });
+  try {
+    const user = await authService.getUserById(req.user.id);
+    res.json({ user: user.toSafeObject(), token: req.token });
+  } catch (err) {
+    if (err.message === 'USER_NOT_FOUND') {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.status(500).json({ error: 'Server Error' });
+  }
 };
 
 module.exports = {

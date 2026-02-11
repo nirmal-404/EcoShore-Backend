@@ -1,3 +1,7 @@
+/**
+ * Validate Middleware - Interface Layer (HTTP)
+ * Request validation middleware using Joi
+ */
 const Joi = require('joi');
 
 const validate = (schema) => (req, res, next) => {

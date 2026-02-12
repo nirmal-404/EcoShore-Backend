@@ -4,6 +4,7 @@ const passport = require('passport');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
+const { swaggerUi, specs } = require('./config/swagger');
 
 dotenv.config();
 require('./config/google.passport.js');
@@ -20,6 +21,7 @@ app.use(passport.initialize());
 app.use('/auth', authRoutes);
 
 // Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT || 4000;
 

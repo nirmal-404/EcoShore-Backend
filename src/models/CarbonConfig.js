@@ -80,39 +80,46 @@ carbonConfigSchema.index(
 carbonConfigSchema.index({ version: -1, createdAt: -1 });
 
 // ==========================================
-// PRE-SAVE HOOKS
+// PRE-SAVE HOOKS - FIXED
 // ==========================================
 
-carbonConfigSchema.pre('save', async function (next) {
-  if (this.isActive) {
-    // Deactivate all other configurations
-    await this.constructor.updateMany(
-      { _id: { $ne: this._id }, isActive: true },
-      {
-        $set: {
-          isActive: false,
-          validUntil: new Date(),
-          updatedBy: this.updatedBy || this.createdBy,
-        },
-      }
-    );
+/**
+ * Deactivate other configs when this one is set to active
+ */
+carbonConfigSchema.pre('save', async function () {
+  try {
+    if (this.isActive) {
+      // Deactivate all other configurations
+      await this.constructor.updateMany(
+        { _id: { $ne: this._id }, isActive: true },
+        {
+          $set: {
+            isActive: false,
+            validUntil: new Date(),
+            updatedBy: this.updatedBy || this.createdBy,
+          },
+        }
+      );
+    }
+  } catch (error) {
+    console.error('Error in pre-save hook (deactivate):', error);
+    throw error;
   }
-  next();
 });
 
 /**
- * Auto-increment version number
+ * Auto-increment version number for existing documents
  */
-carbonConfigSchema.pre('save', async function (next) {
-  if (!this.isNew) {
-    const lastConfig = await this.constructor.findOne(
-      {},
-      { version: 1 },
-      { sort: { version: -1 } }
-    );
-    this.version = (lastConfig?.version || 0) + 1;
+carbonConfigSchema.pre('save', async function () {
+  try {
+    if (!this.isNew) {
+      // For existing documents being updated, increment version
+      this.version = (this.version || 0) + 1;
+    }
+  } catch (error) {
+    console.error('Error in pre-save hook (version):', error);
+    throw error;
   }
-  next();
 });
 
 // ==========================================

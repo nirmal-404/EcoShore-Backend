@@ -1,0 +1,16 @@
+const ROLES = {
+  VOLUNTEER: 'VOLUNTEER',
+  ORGANIZER: 'ORGANIZER',
+  ADMIN: 'ADMIN',
+};
+
+const ROLE_HIERARCHY = {
+  [ROLES.ADMIN]: 3,
+  [ROLES.ORGANIZER]: 2,
+  [ROLES.VOLUNTEER]: 1,
+};
+
+module.exports = {
+  ROLES,
+  ROLE_HIERARCHY,
+};

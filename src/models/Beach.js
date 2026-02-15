@@ -38,12 +38,12 @@ const beachSchema = new mongoose.Schema(
         coordinates: {
           type: [Number], // [longitude, latitude]
           required: false,
-           validate: {
-        validator: function(v) {
-          return !v || (Array.isArray(v) && v.length === 2);
-        },
-        message: 'Coordinates must be an array of [longitude, latitude]'
-      }
+          validate: {
+            validator: function (v) {
+              return !v || (Array.isArray(v) && v.length === 2);
+            },
+            message: 'Coordinates must be an array of [longitude, latitude]',
+          },
         },
       },
     },

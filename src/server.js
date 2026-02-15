@@ -4,7 +4,7 @@ const passport = require('passport');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth.routes');
-const logger = require("./config/logger");
+const logger = require('./config/logger');
 const apiRoutes = require('./routes/index');
 const { swaggerUi, specs } = require('./config/swagger');
 

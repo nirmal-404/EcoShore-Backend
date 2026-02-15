@@ -1,13 +1,13 @@
 const authService = require('../service/auth.service');
 const { generateToken } = require('../config/jwt');
-const logger = require("../config/logger");
+const logger = require('../config/logger');
 
 const register = async (req, res) => {
   try {
     const result = await authService.registerUser(req.body);
     return res.status(201).json(result);
   } catch (err) {
-    logger.error("User registration failed", err);
+    logger.error('User registration failed', err);
     if (err.message === 'USER_EXISTS') {
       return res.status(400).json({ error: 'User already exists' });
     }
@@ -20,7 +20,7 @@ const login = async (req, res) => {
     const result = await authService.loginUser(req.body);
     return res.status(200).json(result);
   } catch (err) {
-    logger.error("User login failed", err);
+    logger.error('User login failed', err);
     if (err.message === 'INVALID_CREDENTIALS') {
       return res.status(400).json({ error: 'Invalid Credentials' });
     }

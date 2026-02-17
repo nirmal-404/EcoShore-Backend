@@ -23,8 +23,7 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Indexes for performance
-UserSchema.index({ email: 1 });
+// Indexes for performance (email index already created by unique: true)
 UserSchema.index({ role: 1 });
 UserSchema.index({ isDeleted: 1 });
 

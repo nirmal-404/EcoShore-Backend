@@ -33,8 +33,7 @@ const OrganizerRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Indexes for performance
-OrganizerRequestSchema.index({ userId: 1 });
+// Indexes for performance (userId index already created by unique: true)
 OrganizerRequestSchema.index({ status: 1 });
 OrganizerRequestSchema.index({ createdAt: -1 });
 

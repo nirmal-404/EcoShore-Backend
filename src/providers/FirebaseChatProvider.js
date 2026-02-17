@@ -27,6 +27,8 @@ class FirebaseChatProvider extends IChatProvider {
 
     try {
       // Firebase Admin SDK initialization
+      // Temporarily disabled - add firebase-service-account.json to enable
+      /*
       const admin = require('firebase-admin');
       const serviceAccount = require('../../config/firebase-service-account.json');
       
@@ -38,9 +40,10 @@ class FirebaseChatProvider extends IChatProvider {
       }
       
       this.db = admin.database();
+      */
+      
       this.initialized = true;
-
-      logger.info('Firebase initialized successfully');
+      logger.warn('Firebase disabled - running in mock mode. Add firebase-service-account.json to enable.');
     } catch (error) {
       logger.error('Failed to initialize Firebase:', error);
       throw error;
@@ -62,13 +65,22 @@ class FirebaseChatProvider extends IChatProvider {
       seenBy: [messageData.senderId], // Sender has seen it
     };
 
-    // Firebase implementation
+    // Firebase implementation (disabled - running in mock mode)
+    /*
     const messageRef = this.db.ref(`chats/${chatGroupId}/messages`).push();
     await messageRef.set(message);
     
     return {
       id: messageRef.key,
       ...message
+    };
+    */
+    
+    // Mock implementation
+    const mockId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return {
+      id: mockId,
+      ...message,
     };
   }
 
@@ -80,7 +92,8 @@ class FirebaseChatProvider extends IChatProvider {
 
     const { limit = 50, lastMessageId = null } = options;
 
-    // Firebase implementation
+    // Firebase implementation (disabled - running in mock mode)
+    /*
     let query = this.db
       .ref(`chats/${chatGroupId}/messages`)
       .orderByChild('createdAt')
@@ -88,7 +101,6 @@ class FirebaseChatProvider extends IChatProvider {
     
     if (lastMessageId) {
       // Implement pagination with lastMessageId
-      // For future enhancement
     }
     
     const snapshot = await query.once('value');
@@ -102,6 +114,10 @@ class FirebaseChatProvider extends IChatProvider {
     });
     
     return messages;
+    */
+    
+    // Mock implementation
+    return [];
   }
 
   /**
@@ -110,9 +126,13 @@ class FirebaseChatProvider extends IChatProvider {
   async deleteMessage(chatGroupId, messageId) {
     this.initialize();
 
-    // Firebase implementation
+    // Firebase implementation (disabled - running in mock mode)
+    /*
     await this.db.ref(`chats/${chatGroupId}/messages/${messageId}`).remove();
-    logger.info(`Deleted message ${messageId} from chat ${chatGroupId}`);
+    */
+    
+    // Mock implementation
+    logger.info(`Mock: Deleted message ${messageId} from chat ${chatGroupId}`);
   }
 
   /**
@@ -121,7 +141,8 @@ class FirebaseChatProvider extends IChatProvider {
   async markMessageSeen(chatGroupId, messageId, userId) {
     this.initialize();
 
-    // Firebase implementation
+    // Firebase implementation (disabled - running in mock mode)
+    /*
     const messageRef = this.db.ref(`chats/${chatGroupId}/messages/${messageId}`);
     const snapshot = await messageRef.once('value');
     const message = snapshot.val();
@@ -132,8 +153,10 @@ class FirebaseChatProvider extends IChatProvider {
         await messageRef.update({ seenBy: message.seenBy });
       }
     }
+    */
     
-    logger.info(`Message ${messageId} marked as seen by user ${userId}`);
+    // Mock implementation
+    logger.info(`Mock: Message ${messageId} marked as seen by user ${userId}`);
   }
 
   /**
@@ -142,7 +165,8 @@ class FirebaseChatProvider extends IChatProvider {
   async getUnreadCount(chatGroupId, userId) {
     this.initialize();
 
-    // Firebase implementation
+    // Firebase implementation (disabled - running in mock mode)
+    /*
     const snapshot = await this.db
       .ref(`chats/${chatGroupId}/messages`)
       .once('value');
@@ -156,6 +180,10 @@ class FirebaseChatProvider extends IChatProvider {
     });
     
     return unreadCount;
+    */
+    
+    // Mock implementation
+    return 0;
   }
 }
 

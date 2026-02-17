@@ -1,5 +1,5 @@
 const express = require('express');
-const communityContentController = require('../controller/communityContent.controller');
+const communityContentController = require('../controller/community.controller');
 const requireAuth = require('../middleware/requireAuth');
 const authOptional = require('../middleware/authOptional');
 const validate = require('../middleware/validate');

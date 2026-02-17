@@ -3,8 +3,9 @@ const User = require('../models/User');
 const { generateToken } = require('../config/jwt');
 const chatService = require('./chat.service');
 const { ROLES } = require('../constants/roles');
+const logger = require('../config/logger');
 
-const registerUser = async ({ email, password, role }) => {
+const registerUser = async ({ email, password, name, address, phone, role }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('USER_EXISTS');
@@ -15,6 +16,9 @@ const registerUser = async ({ email, password, role }) => {
   const user = new User({
     email,
     password: hashed,
+    name,
+    address,
+    phone,
     role: role || ROLES.VOLUNTEER,
   });
 
@@ -24,7 +28,7 @@ const registerUser = async ({ email, password, role }) => {
   try {
     await chatService.addToGlobalVolunteerGroup(user._id.toString());
   } catch (error) {
-    console.error('Failed to add user to global volunteer group:', error);
+    logger.error('Failed to add user to global volunteer group:', error);
     // Don't fail registration if chat group assignment fails
   }
 
@@ -90,7 +94,7 @@ const findOrCreateGoogleUser = async (profile) => {
   try {
     await chatService.addToGlobalVolunteerGroup(user._id.toString());
   } catch (error) {
-    console.error('Failed to add user to global volunteer group:', error);
+    logger.error('Failed to add user to global volunteer group:', error);
     // Don't fail registration if chat group assignment fails
   }
 

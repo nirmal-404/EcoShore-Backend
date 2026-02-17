@@ -231,8 +231,8 @@ FIREBASE_DATABASE_URL=https://echoshore-18def-default-rtdb.firebaseio.com/
 
 ## 📝 Complete Testing Guide
 
-See **POSTMAN_TESTING_GUIDE.md** for:
-- Complete API endpoint examples
+See **SWAGGER_TESTING_GUIDE.md** for:
+- Interactive API testing with Swagger UI
 - Authentication flows
 - Event management testing
 - Chat system testing

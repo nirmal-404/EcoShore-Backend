@@ -1,0 +1,74 @@
+const express = require('express');
+const eventController = require('../controller/event.controller');
+const requireAuth = require('../middleware/requireAuth');
+const authorizeRoles = require('../middleware/authorizeRoles');
+const validate = require('../middleware/validate');
+const {
+  createEventSchema,
+  updateEventSchema,
+} = require('../validation/event.validation');
+const { ROLES } = require('../constants/roles');
+
+const router = express.Router();
+
+/**
+ * @route   POST /events
+ * @desc    Create an event
+ * @access  Private (ORGANIZER, ADMIN)
+ */
+router.post(
+  '/',
+  requireAuth,
+  authorizeRoles(ROLES.ORGANIZER, ROLES.ADMIN),
+  validate(createEventSchema),
+  eventController.createEvent
+);
+
+/**
+ * @route   GET /events
+ * @desc    Get all events
+ * @access  Public
+ */
+router.get('/', eventController.getEvents);
+
+/**
+ * @route   GET /events/:id
+ * @desc    Get event by ID
+ * @access  Public
+ */
+router.get('/:id', eventController.getEventById);
+
+/**
+ * @route   PATCH /events/:id
+ * @desc    Update event
+ * @access  Private (Organizer or Admin)
+ */
+router.patch(
+  '/:id',
+  requireAuth,
+  validate(updateEventSchema),
+  eventController.updateEvent
+);
+
+/**
+ * @route   POST /events/:id/join
+ * @desc    Join event as volunteer
+ * @access  Private
+ */
+router.post('/:id/join', requireAuth, eventController.joinEvent);
+
+/**
+ * @route   POST /events/:id/leave
+ * @desc    Leave event
+ * @access  Private
+ */
+router.post('/:id/leave', requireAuth, eventController.leaveEvent);
+
+/**
+ * @route   DELETE /events/:id
+ * @desc    Delete event
+ * @access  Private (Organizer or Admin)
+ */
+router.delete('/:id', requireAuth, eventController.deleteEvent);
+
+module.exports = router;

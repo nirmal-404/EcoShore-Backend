@@ -36,7 +36,7 @@ const loginUser = async ({ email, password }) => {
     throw new Error('INVALID_CREDENTIALS');
   }
 
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error('INVALID_CREDENTIALS');
   }
@@ -76,8 +76,51 @@ const findOrCreateGoogleUser = async (profile) => {
   });
 };
 
+const registerAgent = async ({ email, password, name, nic, assignedBeach }) => {
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    throw new Error('USER_EXISTS');
+  }
+
+  const existingNic = await User.findOne({ nic });
+  if (existingNic) {
+    throw new Error('NIC_EXISTS');
+  }
+
+  const Beach = require('../models/Beach');
+  const beach = await Beach.findById(assignedBeach);
+  if (!beach || !beach.isActive) {
+    throw new Error('BEACH_NOT_FOUND');
+  }
+
+  const hashed = await bcrypt.hash(password, 10);
+
+  const agent = new User({
+    email,
+    password: hashed,
+    name,
+    nic,
+    assignedBeach,
+    role: 'agent',
+  });
+
+  await agent.save();
+
+  return {
+    agent: {
+      id: agent._id,
+      email: agent.email,
+      name: agent.name,
+      nic: agent.nic,
+      assignedBeach: agent.assignedBeach,
+      role: agent.role,
+    },
+  };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   findOrCreateGoogleUser,
+  registerAgent,
 };

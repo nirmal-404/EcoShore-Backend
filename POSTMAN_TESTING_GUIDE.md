@@ -1,36 +1,71 @@
-# Swagger API Testing Guide - EcoShore Backend
+# Postman Testing Guide - EcoShore Backend
 
-## Quick Start
+## Setup Instructions
 
-### 1. Start Your Server
+### 1. Install Dependencies
+```bash
+npm install
+# For Firebase integration (optional):
+npm install firebase-admin
+```
+
+### 2. Configure Environment Variables
+
+Copy `.env.example` to `.env` and update the values:
+
+```env
+PORT=4000
+MONGO_URI=mongodb://localhost:27017/ecoshore
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
+```
+
+### 3. Firebase Setup (For Chat Feature)
+
+#### Option A: Use Mock Mode (Quick Testing)
+- Chat feature works in **mock mode** by default
+- No Firebase setup needed
+- Messages won't persist but API endpoints work
+
+#### Option B: Full Firebase Integration
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or use existing one
+3. Enable **Realtime Database**
+4. Go to Project Settings → Service Accounts
+5. Click "Generate New Private Key"
+6. Save as `src/config/firebase-service-account.json`
+7. Update `.env` with your Firebase Database URL
+8. Install firebase-admin: `npm install firebase-admin`
+9. Uncomment Firebase code in `src/providers/FirebaseChatProvider.js` (lines 27-40)
+
+### 4. Start MongoDB
+```bash
+# Make sure MongoDB is running
+mongod
+```
+
+### 5. Start Server
 ```bash
 npm run dev
 ```
 
-### 2. Access Swagger UI
-Open your browser and go to:
-```
-http://localhost:4000/api-docs
-```
-
-### 3. Start Testing!
-- All endpoints are documented with examples
-- Click "Try it out" button on any endpoint
-- Fill in the parameters
-- Click "Execute" to test
+Server will run on: `http://localhost:4000`
 
 ---
 
-## Authentication Setup
+## API Testing with Postman
 
-### Step 1: Register or Login
+### Base URL
+```
+http://localhost:4000
+```
 
-1. Navigate to **Auth** section in Swagger UI
-2. Find **POST /auth/register** or **POST /auth/login**
-3. Click **"Try it out"**
-4. Enter request body:
-3. Click **"Try it out"**
-4. Enter request body:
+---
+
+## 1. AUTHENTICATION (Get Token First!)
+
+### Register User
+**POST** `/auth/register`
 ```json
 {
   "email": "volunteer@test.com",
@@ -38,476 +73,508 @@ http://localhost:4000/api-docs
   "name": "Test Volunteer"
 }
 ```
-5. Click **"Execute"**
-6. **Copy the token** from the response
 
-### Step 2: Authorize Swagger
-
-1. Click the **"Authorize"** button at the top right of Swagger UI (🔓 icon)
-2. In the "Value" field, enter:
-   ```
-   Bearer YOUR_TOKEN_HERE
-   ```
-   *(Replace YOUR_TOKEN_HERE with the actual token you copied)*
-3. Click **"Authorize"**
-4. Click **"Close"**
-
-Now all authenticated endpoints will use this token automatically! 🎉
-
----
-
-## Environment Configuration
-
-### Required .env Variables
-```env
-PORT=4000
-MONGO_URI=mongodb://localhost:27017/ecoshore
-# OR use MongoDB Atlas:
-# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/ecoshore
-
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-FRONTEND_URL=http://localhost:3000
-FIREBASE_DATABASE_URL=https://your-project.firebaseio.com/
-NODE_ENV=development
+**Response:**
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "507f1f77bcf86cd799439011",
+    "email": "volunteer@test.com",
+    "role": "VOLUNTEER"
+  }
+}
 ```
 
-### Firebase Setup (Optional - for Chat Persistence)
-- **Default:** Chat works in **mock mode** (no setup needed)
-- **Full Firebase:** See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for instructions
-
----
-
-## Testing Workflows
-
-### Workflow 1: User Registration & Login
-
-1. **POST /auth/register**
-   - Enter: email, password, name
-   - Execute
-   - Copy the token from response
-
-2. **Authorize Swagger**
-   - Click 🔓 icon → Enter `Bearer YOUR_TOKEN`
-   - Now you're authenticated!
-
-3. **POST /auth/login** (optional - test login)
-   - Enter: email, password
-   - Execute
-   - Get a fresh token
-
----
-
-### Workflow 2: Volunteer → Organizer Promotion
-
-#### As Volunteer:
-
-1. **POST /organizer-requests**
-   - Make sure you're authorized (Bearer token set)
-   - Enter reason:
-   - Enter reason:
-   ```json
-   {
-     "reason": "I have 5 years experience organizing beach cleanups"
-   }
-   ```
-   - Execute
-   - Note the request ID from response
-
-2. **GET /organizer-requests/me**
-   - Execute to check your request status
-   - Status will be "PENDING"
-
-#### As Admin:
-
-3. **Create Admin User** (in MongoDB):
-   ```javascript
-   db.users.insertOne({
-     email: "admin@test.com",
-     password: "$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG", // "password123"
-     name: "Admin User",
-     role: "admin",
-     isDeleted: false,
-     createdAt: new Date(),
-     updatedAt: new Date()
-   })
-   ```
-
-4. **Login as Admin**
-   - POST /auth/login with admin credentials
-   - Copy the new token
-   - Re-authorize Swagger with admin token
-
-5. **GET /organizer-requests?status=PENDING**
-   - Execute to see all pending requests
-
-6. **PATCH /organizer-requests/{requestId}/review**
-   - Enter the requestId from step 1
-   - Enter body:
-   ```json
-   {
-     "action": "APPROVE"
-   }
-   ```
-   - Execute
-
-7. **User is now promoted!** Login as volunteer again to get new token with organizer role
-
----
-
-### Workflow 3: Create & Manage Events
-
-#### As Organizer:
-
-1. **Make sure you're authorized** with an organizer/admin token
-
-2. **POST /events**
-   - Click "Try it out"
-   - Enter event details:
-   - Enter event details:
-   ```json
-   {
-     "title": "Beach Cleanup - Santa Monica",
-     "description": "Join us for a community beach cleanup event",
-     "location": "Santa Monica Beach, CA",
-     "coordinates": {
-       "latitude": 34.0195,
-       "longitude": -118.4912
-     },
-     "startDate": "2026-03-15T09:00:00Z",
-     "endDate": "2026-03-15T13:00:00Z",
-     "maxVolunteers": 50,
-     "tags": ["beach-cleanup", "environment", "community"]
-   }
-   ```
-   - Execute
-   - **Note:** Event automatically creates a chat group!
-   - Copy eventId and chatGroupId from response
-
-3. **GET /events**
-   - View all events (no auth required)
-   - Try filters: `?status=UPCOMING&page=1&limit=10`
-
-4. **GET /events/{eventId}**
-   - View specific event details
-
-#### As Volunteer:
-
-5. **POST /events/{eventId}/join**
-   - Authorize with volunteer token
-   - Enter the eventId
-   - Execute to join the event
-
-6. **POST /events/{eventId}/leave**
-   - Leave an event you joined
-
-#### As Organizer/Admin:
-
-7. **PATCH /events/{eventId}**
-   - Update event details
-   - Enter fields to update:
-   ```json
-   {
-     "title": "Updated Event Title",
-     "maxVolunteers": 75
-   }
-   ```
-
-8. **DELETE /events/{eventId}**
-   - Soft delete an event
-
----
-
-### Workflow 4: Chat System
-
-#### Create & Manage Chat Groups:
-
-1. **POST /chat/groups** (Organizer/Admin only)
-   ```json
-   {
-     "name": "Volunteer Coordination",
-     "description": "Main chat for volunteer coordination",
-     "type": "ORGANIZER_PRIVATE"
-   }
-   ```
-   **Types:**
-   - `GLOBAL_VOLUNTEER` - All volunteers
-   - `ORGANIZER_PRIVATE` - Organizers only  
-   - `EVENT_GROUP` - Event-specific (auto-created)
-
-2. **GET /chat/groups**
-   - View all your chat groups
-
-3. **GET /chat/groups/{groupId}**
-   - View specific group details
-
-#### Send & Read Messages:
-
-4. **POST /chat/groups/{groupId}/messages**
-   - Enter groupId
-   - Enter message:
-   ```json
-   {
-     "text": "Hello everyone! Looking forward to the cleanup!",
-     "mediaUrl": "https://example.com/photo.jpg"
-   }
-   ```
-
-5. **GET /chat/groups/{groupId}/messages**
-   - View messages (add `?limit=50` for more)
-
-6. **PATCH /chat/groups/{groupId}/messages/{messageId}/seen**
-   - Mark message as read
-
-7. **DELETE /chat/groups/{groupId}/messages/{messageId}**
-   - Delete a message (admin only)
-
-#### Manage Members:
-
-8. **POST /chat/groups/{groupId}/members**
-   - Add member (admin only):
-   ```json
-   {
-     "userId": "USER_ID_HERE"
-   }
-   ```
-
-9. **DELETE /chat/groups/{groupId}/members/{userId}**
-   - Remove member
-
-10. **PATCH /chat/groups/{groupId}/admins**
-    - Promote to admin:
-    ```json
-    {
-      "userId": "USER_ID_HERE"
-    }
-    ```
-
----
-
-### Workflow 5: Community Content
-
-#### Create & Manage Posts:
-
-1. **POST /community/posts**
-   ```json
-   {
-     "text": "Just completed an amazing beach cleanup! Collected 50kg of plastic waste!",
-     "mediaUrls": ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"],
-     "visibility": "PUBLIC"
-   }
-   ```
-   **Visibility:**
-   - `PUBLIC` - Everyone can see
-   - `AUTHENTICATED` - Only logged-in users
-
-2. **GET /community/posts**
-   - View all posts (public endpoint)
-   - Try: `?page=1&limit=10&authorId=USER_ID`
-
-3. **GET /community/posts/{postId}**
-   - View specific post
-
-4. **PATCH /community/posts/{postId}**
-   - Update your own post:
-   ```json
-   {
-     "text": "Updated post text",
-     "visibility": "AUTHENTICATED"
-   }
-   ```
-
-#### Interact with Posts:
-
-5. **POST /community/posts/{postId}/comments**
-   ```json
-   {
-     "text": "Great work! Keep it up!"
-   }
-   ```
-
-6. **GET /community/posts/{postId}/comments**
-   - View all comments (`?page=1&limit=20`)
-
-7. **POST /community/posts/{postId}/like**
-   - Like a post
-
-8. **DELETE /community/posts/{postId}/like**
-   - Unlike a post
-
-9. **POST /community/posts/{postId}/share**
-   - Share a post (increments share count)
-
-10. **DELETE /community/content/{contentId}**
-    - Delete your own post or comment
-
----
-
-## Swagger UI Tips
-
-### 🔓 Authorization
-- Always authorize after getting your token
-- Click the lock icon next to any endpoint to see if it requires auth
-- Green lock = authorized, red lock = needs authorization
-
-### 📋 Schema Models
-- Click "Schemas" at the bottom to see all data models
-- Shows field types, requirements, and examples
-
-### 💾 Try Different Responses
-- Swagger shows example responses for each status code
-- 200 = Success
-- 400 = Bad Request
-- 401 = Unauthorized
-- 403 = Forbidden
-- 404 = Not Found
-
-### 🔄 Testing Multiple Users
-1. Register/Login as User 1 → Copy token
-2. Authorize with User 1 token → Test endpoints
-3. Register/Login as User 2 → Copy new token
-4. Click Authorize → Replace with User 2 token
-5. Test interactions between users
-
----
-
-## Common Testing Scenarios
-
-### Scenario 1: End-to-End Event Flow
-```
-1. Register volunteer A
-2. Register volunteer B
-3. Create admin in DB
-4. Volunteer A applies for organizer
-5. Admin approves request
-6. Organizer A creates event (chat group auto-created)
-7. Volunteer B joins event
-8. Both send messages in event chat
-9. Create community post about event
-10. Users comment and like the post
+### Login
+**POST** `/auth/login`
+```json
+{
+  "email": "volunteer@test.com",
+  "password": "password123"
+}
 ```
 
-### Scenario 2: Role-Based Access Control
-```
-1. Try creating event as volunteer → Should fail (403)
-2. Apply for organizer role
-3. Get approved by admin
-4. Login again (get new token with organizer role)
-5. Try creating event again → Should succeed (200)
+### Create Admin User (via MongoDB)
+```javascript
+// In MongoDB shell or Compass - use this exact command
+db.users.insertOne({
+  email: "admin@test.com",
+  password: "$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG",
+  name: "Admin User",
+  role: "admin",
+  isDeleted: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
 ```
 
-### Scenario 3: Chat Group Management
-```
-1. Auto-join GLOBAL_VOLUNTEER group on registration
-2. Create ORGANIZER_PRIVATE group
-3. Add/remove members
-4. Promote members to admin
-5. Send messages and mark as seen
-6. Delete messages as admin
+**Password:** `password123` (already hashed above)
+
+**Alternative: Generate Your Own Hash**
+```javascript
+// In Node.js REPL (run: node)
+const bcrypt = require('bcryptjs');
+bcrypt.hash('your-desired-password', 10).then(hash => console.log(hash));
+// Copy the output hash and use it in the insertOne command
 ```
 
 ---
 
-## Quick Reference
+## 2. ORGANIZER REQUEST FLOW
 
-### Authentication Endpoints
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Login and get token
-- `GET /auth/google` - Google OAuth
+### Step 1: Create Organizer Request (VOLUNTEER only)
+**POST** `/organizer-requests`
 
-### Organizer Requests
-- `POST /organizer-requests` - Apply for organizer role
-- `GET /organizer-requests/me` - Get my request
-- `GET /organizer-requests` - Get all requests (admin)
-- `PATCH /organizer-requests/{id}/review` - Approve/reject (admin)
-- `DELETE /organizer-requests/{id}` - Delete request
+**Headers:**
+```
+Authorization: Bearer YOUR_VOLUNTEER_TOKEN
+```
 
-### Events
-- `POST /events` - Create event (organizer/admin)
-- `GET /events` - List all events (public)
-- `GET /events/{id}` - Get event details (public)
-- `PATCH /events/{id}` - Update event (organizer/admin)
-- `DELETE /events/{id}` - Delete event (organizer/admin)
-- `POST /events/{id}/join` - Join event
-- `POST /events/{id}/leave` - Leave event
+**Body:**
+```json
+{
+  "reason": "I have 5 years experience organizing beach cleanups in my local community"
+}
+```
 
-### Chat
-- `POST /chat/groups` - Create chat group (organizer/admin)
-- `GET /chat/groups` - Get my groups
-- `GET /chat/groups/{id}` - Get group details
-- `POST /chat/groups/{id}/messages` - Send message
-- `GET /chat/groups/{id}/messages` - Get messages
-- `DELETE /chat/groups/{id}/messages/{msgId}` - Delete message (admin)
-- `PATCH /chat/groups/{id}/messages/{msgId}/seen` - Mark as seen
-- `POST /chat/groups/{id}/members` - Add member (admin)
-- `DELETE /chat/groups/{id}/members/{userId}` - Remove member
+### Step 2: Get My Request
+**GET** `/organizer-requests/me`
 
-### Community
-- `POST /community/posts` - Create post
-- `GET /community/posts` - List posts (public)
-- `GET /community/posts/{id}` - Get post details
-- `PATCH /community/posts/{id}` - Update post (author)
-- `POST /community/posts/{id}/comments` - Add comment
-- `GET /community/posts/{id}/comments` - Get comments
-- `POST /community/posts/{id}/like` - Like post
-- `DELETE /community/posts/{id}/like` - Unlike post
-- `POST /community/posts/{id}/share` - Share post
-- `DELETE /community/content/{id}` - Delete post/comment (author)
+**Headers:**
+```
+Authorization: Bearer YOUR_VOLUNTEER_TOKEN
+```
 
----
+### Step 3: Get All Requests (ADMIN only)
+**GET** `/organizer-requests?status=PENDING&page=1&limit=10`
 
-## Troubleshooting
+**Headers:**
+```
+Authorization: Bearer YOUR_ADMIN_TOKEN
+```
 
-### Issue: "Unauthorized" (401)
-**Solution:** Click Authorize button and enter `Bearer YOUR_TOKEN`
+### Step 4: Review Request (ADMIN only)
 
-### Issue: "Forbidden" (403)
-**Solution:** Check your role. You may need organizer/admin role for this endpoint.
+**Approve:**
+**PATCH** `/organizer-requests/:requestId/review`
 
-### Issue: Swagger UI won't load
-**Solutions:**
-- Check server is running: `npm run dev`
-- Visit: http://localhost:4000/api-docs
-- Check console for errors
+**Headers:**
+```
+Authorization: Bearer YOUR_ADMIN_TOKEN
+```
 
-### Issue: Token expired
-**Solution:** Login again to get a fresh token, then re-authorize Swagger
+**Body:**
+```json
+{
+  "action": "APPROVE"
+}
+```
 
-### Issue: Can't find event/chat/post
-**Solution:** Make sure you created the resource first and copied the correct ID
+**Reject:**
+```json
+{
+  "action": "REJECT",
+  "rejectionReason": "Insufficient experience"
+}
+```
 
-### Issue: Firebase errors in console
-**Solution:** App runs in mock mode by default. Messages work but don't persist. See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for full integration.
+### Step 5: Delete Request
+**DELETE** `/organizer-requests/:requestId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
 
 ---
 
-## Additional Resources
+## 3. EVENT MANAGEMENT
 
-- **Server URL:** http://localhost:4000
-- **Swagger UI:** http://localhost:4000/api-docs  
-- **Firebase Setup:** See [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
-- **Setup Status:** See [SETUP_STATUS.md](SETUP_STATUS.md)
+### Create Event (ORGANIZER/ADMIN only)
+**POST** `/events`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_ORGANIZER_TOKEN
+```
+
+**Body:**
+```json
+{
+  "title": "Beach Cleanup - Santa Monica",
+  "description": "Join us for a community beach cleanup event",
+  "location": "Santa Monica Beach, CA",
+  "coordinates": {
+    "latitude": 34.0195,
+    "longitude": -118.4912
+  },
+  "startDate": "2026-03-15T09:00:00Z",
+  "endDate": "2026-03-15T13:00:00Z",
+  "maxVolunteers": 50,
+  "tags": ["beach-cleanup", "environment", "community"]
+}
+```
+
+### Get All Events (Public)
+**GET** `/events?status=UPCOMING&page=1&limit=10`
+
+No authentication required
+
+### Get Event by ID (Public)
+**GET** `/events/:eventId`
+
+### Update Event (Organizer/Admin only)
+**PATCH** `/events/:eventId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "title": "Updated Event Title",
+  "maxVolunteers": 75
+}
+```
+
+### Join Event (Private)
+**POST** `/events/:eventId/join`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Leave Event (Private)
+**POST** `/events/:eventId/leave`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Delete Event (Organizer/Admin only)
+**DELETE** `/events/:eventId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+---
+
+## 4. CHAT SYSTEM
+
+### Create Chat Group (ORGANIZER/ADMIN only)
+**POST** `/chat/groups`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_ORGANIZER_TOKEN
+```
+
+**Body:**
+```json
+{
+  "name": "Volunteer Coordination",
+  "description": "Main chat for volunteer coordination",
+  "type": "ORGANIZER_PRIVATE"
+}
+```
+
+**Types:**
+- `GLOBAL_VOLUNTEER` - All volunteers
+- `ORGANIZER_PRIVATE` - Organizers only
+- `EVENT_GROUP` - Event-specific (auto-created with events)
+
+### Get My Chat Groups
+**GET** `/chat/groups`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Get Chat Group by ID
+**GET** `/chat/groups/:groupId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Add Member to Group (Admin only)
+**POST** `/chat/groups/:groupId/members`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "userId": "507f1f77bcf86cd799439011"
+}
+```
+
+### Remove Member (Admin or Self)
+**DELETE** `/chat/groups/:groupId/members/:userId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Promote to Admin
+**PATCH** `/chat/groups/:groupId/admins`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "userId": "507f1f77bcf86cd799439011"
+}
+```
+
+### Send Message
+**POST** `/chat/groups/:groupId/messages`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "text": "Hello everyone! Looking forward to the cleanup event!",
+  "mediaUrl": "https://example.com/image.jpg"
+}
+```
+
+### Get Messages
+**GET** `/chat/groups/:groupId/messages?limit=50`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Delete Message (Admin only)
+**DELETE** `/chat/groups/:groupId/messages/:messageId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Mark Message as Seen
+**PATCH** `/chat/groups/:groupId/messages/:messageId/seen`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+---
+
+## 5. COMMUNITY CONTENT
+
+### Create Post
+**POST** `/community/posts`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "text": "Just completed an amazing beach cleanup! Collected 50kg of plastic waste!",
+  "mediaUrls": ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"],
+  "visibility": "PUBLIC"
+}
+```
+
+**Visibility:**
+- `PUBLIC` - Everyone can see
+- `AUTHENTICATED` - Only logged-in users
+
+### Get All Posts (Public with optional auth)
+**GET** `/community/posts?page=1&limit=10&authorId=OPTIONAL_USER_ID`
+
+Optional Header:
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Get Post by ID
+**GET** `/community/posts/:postId`
+
+### Create Comment
+**POST** `/community/posts/:postId/comments`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "text": "Great work! Keep it up!"
+}
+```
+
+### Get Comments
+**GET** `/community/posts/:postId/comments?page=1&limit=20`
+
+### Like Post
+**POST** `/community/posts/:postId/like`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Unlike Post
+**DELETE** `/community/posts/:postId/like`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Share Post
+**POST** `/community/posts/:postId/share`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Update Post (Author only)
+**PATCH** `/community/posts/:postId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Body:**
+```json
+{
+  "text": "Updated post text",
+  "visibility": "AUTHENTICATED"
+}
+```
+
+### Delete Post/Comment (Author only)
+**DELETE** `/community/content/:contentId`
+
+**Headers:**
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+---
+
+## Testing Workflow Example
+
+### Complete Flow: Volunteer → Organizer → Event → Chat
+
+1. **Register as Volunteer**
+   - POST `/auth/register` with volunteer details
+   - Save the token
+
+2. **Request Organizer Role**
+   - POST `/organizer-requests` with reason
+   - Save request ID
+
+3. **Login as Admin** (create admin in DB first)
+   - POST `/auth/login` with admin credentials
+   - Save admin token
+
+4. **Approve Request**
+   - PATCH `/organizer-requests/:id/review` with APPROVE
+
+5. **Login as Promoted Organizer**
+   - POST `/auth/login` (user is now ORGANIZER)
+   - Save new token
+
+6. **Create Event**
+   - POST `/events` with event details
+   - Event auto-creates chat group
+   - Save event ID and chatGroupId
+
+7. **Join Event as Volunteer**
+   - Login as different volunteer
+   - POST `/events/:id/join`
+
+8. **Send Chat Message**
+   - POST `/chat/groups/:groupId/messages`
+
+9. **Create Community Post**
+   - POST `/community/posts`
+
+10. **Get All Events**
+    - GET `/events`
+
+---
+
+## Common Issues
+
+### Issue: "Unauthorized" Error
+**Solution:** Make sure you include the `Authorization: Bearer TOKEN` header
+
+### Issue: "User not found" when testing chat
+**Solution:** Make sure users exist in database before adding to chat groups
+
+### Issue: Firebase errors
+**Solution:** Use mock mode (default) for testing without Firebase setup
+
+### Issue: "Forbidden" Error
+**Solution:** Check that your user has the correct role for the endpoint
+
+---
+
+## Postman Environment Variables
+
+Create these in Postman:
+
+- `baseUrl`: `http://localhost:4000`
+- `volunteerToken`: (set after volunteer login)
+- `organizerToken`: (set after organizer login)
+- `adminToken`: (set after admin login)
+- `eventId`: (set after creating event)
+- `chatGroupId`: (set after creating chat group)
+- `postId`: (set after creating post)
+
+---
+
+## API Documentation
+
+Swagger documentation available at:
+```
+http://localhost:4000/api-docs
+```
 
 ---
 
 ## Notes
 
-✅ **Swagger Benefits:**
-- No need to manually add headers to every request
-- Built-in request/response validation
-- Interactive documentation
-- Auto-generated examples
-- Easy to test different user roles
-
-ℹ️ **Key Points:**
-- Chat works in **mock mode** by default (no Firebase needed)
-- Events automatically create chat groups
-- Volunteers auto-join GLOBAL_VOLUNTEER group on registration
-- Role hierarchy: VOLUNTEER < ORGANIZER < ADMIN
-- Most resources use soft deletes (isDeleted flag)
-
-🚀 **Ready to Test:**
-1. Start server: `npm run dev`
-2. Open: http://localhost:4000/api-docs
-3. Register → Get token → Authorize → Start testing!
+- **Mock Mode:** Chat feature works in mock mode without Firebase
+- **Transactions:** Event creation automatically creates chat groups
+- **Role Flow:** VOLUNTEER → apply → ADMIN approves → ORGANIZER
+- **Auto-Groups:** Volunteers auto-added to GLOBAL_VOLUNTEER group on registration
+- **Soft Deletes:** Events and posts use soft deletes (isDeleted flag)

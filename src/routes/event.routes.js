@@ -3,10 +3,8 @@ const eventController = require('../controller/event.controller');
 const requireAuth = require('../middleware/requireAuth');
 const authorizeRoles = require('../middleware/authorizeRoles');
 const validate = require('../middleware/validate');
-const {
-  createEventSchema,
-  updateEventSchema,
-} = require('../validation/event.validation');
+const eventValidation = require('../validation/event.validation');
+
 const { ROLES } = require('../constants/roles');
 
 const router = express.Router();
@@ -20,7 +18,7 @@ router.post(
   '/',
   requireAuth,
   authorizeRoles(ROLES.ORGANIZER, ROLES.ADMIN),
-  validate(createEventSchema),
+  validate(eventValidation.createEvent),
   eventController.createEvent
 );
 
@@ -46,7 +44,7 @@ router.get('/:id', eventController.getEventById);
 router.patch(
   '/:id',
   requireAuth,
-  validate(updateEventSchema),
+  validate(eventValidation.updateEvent),
   eventController.updateEvent
 );
 

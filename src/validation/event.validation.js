@@ -30,9 +30,6 @@ const eventValidation = {
 
     // Update event validation
     updateEvent: {
-        params: {
-            eventId: Joi.string().optional(),
-        },
         body: {
             title: Joi.string().max(200).optional(),
             description: Joi.string().max(2000).optional(),
@@ -58,16 +55,6 @@ const eventValidation = {
             eventId: Joi.string().optional(),
         }
     }
-
-    //
 }
 
-
-const updateEventSchema = Joi.object({
-
-}).min(1);
-
-module.exports = {
-  createEventSchema,
-  updateEventSchema,
-};
+module.exports = eventValidation;

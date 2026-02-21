@@ -56,7 +56,10 @@ class WeatherService {
       return formatted;
     } catch (error) {
       // If API call fails, return synthetic data so the heatmap still works
-      console.error('[WeatherService] OpenWeatherMap API error:', error.message);
+      console.error(
+        '[WeatherService] OpenWeatherMap API error:',
+        error.message
+      );
       const syntheticData = this._generateSyntheticForecast();
       weatherCache.set(cacheKey, syntheticData);
       return syntheticData;

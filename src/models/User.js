@@ -4,16 +4,16 @@ const { ROLES } = require('../constants/roles');
 
 const UserSchema = new mongoose.Schema(
   {
-      name: {
-          type: String,
-          trim: true,
-      },
-      nic: {
-          type: String,
-          trim: true,
-          unique: true,
-          sparse: true,
-      },
+    name: {
+      type: String,
+      trim: true,
+    },
+    nic: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+    },
     address: { type: String },
     phone: { type: String },
     email: { type: String, required: true, unique: true },
@@ -24,11 +24,11 @@ const UserSchema = new mongoose.Schema(
       enum: [ROLES.VOLUNTEER, ROLES.ORGANIZER, ROLES.ADMIN],
       default: ROLES.VOLUNTEER,
     },
-      assignedBeach: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Beach',
-          default: null,
-      },
+    assignedBeach: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Beach',
+      default: null,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

@@ -99,7 +99,7 @@ class EventService {
 
     const [events, total] = await Promise.all([
       Event.find(query)
-          .populate('beachId')
+        .populate('beachId')
         .populate('organizerId', 'name email')
         .populate('chatGroupId')
         .sort({ startDate: 1 })

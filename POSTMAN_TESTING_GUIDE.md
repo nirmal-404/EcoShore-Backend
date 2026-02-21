@@ -3,6 +3,7 @@
 ## Setup Instructions
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 # For Firebase integration (optional):
@@ -23,11 +24,13 @@ FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
 ### 3. Firebase Setup (For Chat Feature)
 
 #### Option A: Use Mock Mode (Quick Testing)
+
 - Chat feature works in **mock mode** by default
 - No Firebase setup needed
 - Messages won't persist but API endpoints work
 
 #### Option B: Full Firebase Integration
+
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Create a new project or use existing one
 3. Enable **Realtime Database**
@@ -39,12 +42,14 @@ FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
 9. Uncomment Firebase code in `src/providers/FirebaseChatProvider.js` (lines 27-40)
 
 ### 4. Start MongoDB
+
 ```bash
 # Make sure MongoDB is running
 mongod
 ```
 
 ### 5. Start Server
+
 ```bash
 npm run dev
 ```
@@ -56,6 +61,7 @@ Server will run on: `http://localhost:4000`
 ## API Testing with Postman
 
 ### Base URL
+
 ```
 http://localhost:4000
 ```
@@ -65,7 +71,9 @@ http://localhost:4000
 ## 1. AUTHENTICATION (Get Token First!)
 
 ### Register User
+
 **POST** `/auth/register`
+
 ```json
 {
   "email": "volunteer@test.com",
@@ -75,6 +83,7 @@ http://localhost:4000
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -88,7 +97,9 @@ http://localhost:4000
 ```
 
 ### Login
+
 **POST** `/auth/login`
+
 ```json
 {
   "email": "volunteer@test.com",
@@ -97,26 +108,28 @@ http://localhost:4000
 ```
 
 ### Create Admin User (via MongoDB)
+
 ```javascript
 // In MongoDB shell or Compass - use this exact command
 db.users.insertOne({
-  email: "admin@test.com",
-  password: "$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG",
-  name: "Admin User",
-  role: "admin",
+  email: 'admin@test.com',
+  password: '$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG',
+  name: 'Admin User',
+  role: 'admin',
   isDeleted: false,
   createdAt: new Date(),
-  updatedAt: new Date()
-})
+  updatedAt: new Date(),
+});
 ```
 
 **Password:** `password123` (already hashed above)
 
 **Alternative: Generate Your Own Hash**
+
 ```javascript
 // In Node.js REPL (run: node)
 const bcrypt = require('bcryptjs');
-bcrypt.hash('your-desired-password', 10).then(hash => console.log(hash));
+bcrypt.hash('your-desired-password', 10).then((hash) => console.log(hash));
 // Copy the output hash and use it in the insertOne command
 ```
 
@@ -125,14 +138,17 @@ bcrypt.hash('your-desired-password', 10).then(hash => console.log(hash));
 ## 2. ORGANIZER REQUEST FLOW
 
 ### Step 1: Create Organizer Request (VOLUNTEER only)
+
 **POST** `/organizer-requests`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_VOLUNTEER_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "reason": "I have 5 years experience organizing beach cleanups in my local community"
@@ -140,17 +156,21 @@ Authorization: Bearer YOUR_VOLUNTEER_TOKEN
 ```
 
 ### Step 2: Get My Request
+
 **GET** `/organizer-requests/me`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_VOLUNTEER_TOKEN
 ```
 
 ### Step 3: Get All Requests (ADMIN only)
+
 **GET** `/organizer-requests?status=PENDING&page=1&limit=10`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_ADMIN_TOKEN
 ```
@@ -161,11 +181,13 @@ Authorization: Bearer YOUR_ADMIN_TOKEN
 **PATCH** `/organizer-requests/:requestId/review`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_ADMIN_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "action": "APPROVE"
@@ -173,6 +195,7 @@ Authorization: Bearer YOUR_ADMIN_TOKEN
 ```
 
 **Reject:**
+
 ```json
 {
   "action": "REJECT",
@@ -181,9 +204,11 @@ Authorization: Bearer YOUR_ADMIN_TOKEN
 ```
 
 ### Step 5: Delete Request
+
 **DELETE** `/organizer-requests/:requestId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
@@ -193,14 +218,17 @@ Authorization: Bearer YOUR_TOKEN
 ## 3. EVENT MANAGEMENT
 
 ### Create Event (ORGANIZER/ADMIN only)
+
 **POST** `/events`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_ORGANIZER_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "title": "Beach Cleanup - Santa Monica",
@@ -218,22 +246,27 @@ Authorization: Bearer YOUR_ORGANIZER_TOKEN
 ```
 
 ### Get All Events (Public)
+
 **GET** `/events?status=UPCOMING&page=1&limit=10`
 
 No authentication required
 
 ### Get Event by ID (Public)
+
 **GET** `/events/:eventId`
 
 ### Update Event (Organizer/Admin only)
+
 **PATCH** `/events/:eventId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "title": "Updated Event Title",
@@ -242,25 +275,31 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Join Event (Private)
+
 **POST** `/events/:eventId/join`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Leave Event (Private)
+
 **POST** `/events/:eventId/leave`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Delete Event (Organizer/Admin only)
+
 **DELETE** `/events/:eventId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
@@ -270,14 +309,17 @@ Authorization: Bearer YOUR_TOKEN
 ## 4. CHAT SYSTEM
 
 ### Create Chat Group (ORGANIZER/ADMIN only)
+
 **POST** `/chat/groups`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_ORGANIZER_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "name": "Volunteer Coordination",
@@ -287,35 +329,43 @@ Authorization: Bearer YOUR_ORGANIZER_TOKEN
 ```
 
 **Types:**
+
 - `GLOBAL_VOLUNTEER` - All volunteers
 - `ORGANIZER_PRIVATE` - Organizers only
 - `EVENT_GROUP` - Event-specific (auto-created with events)
 
 ### Get My Chat Groups
+
 **GET** `/chat/groups`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Get Chat Group by ID
+
 **GET** `/chat/groups/:groupId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Add Member to Group (Admin only)
+
 **POST** `/chat/groups/:groupId/members`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "userId": "507f1f77bcf86cd799439011"
@@ -323,22 +373,27 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Remove Member (Admin or Self)
+
 **DELETE** `/chat/groups/:groupId/members/:userId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Promote to Admin
+
 **PATCH** `/chat/groups/:groupId/admins`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "userId": "507f1f77bcf86cd799439011"
@@ -346,14 +401,17 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Send Message
+
 **POST** `/chat/groups/:groupId/messages`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "text": "Hello everyone! Looking forward to the cleanup event!",
@@ -362,25 +420,31 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Get Messages
+
 **GET** `/chat/groups/:groupId/messages?limit=50`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Delete Message (Admin only)
+
 **DELETE** `/chat/groups/:groupId/messages/:messageId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Mark Message as Seen
+
 **PATCH** `/chat/groups/:groupId/messages/:messageId/seen`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
@@ -390,46 +454,59 @@ Authorization: Bearer YOUR_TOKEN
 ## 5. COMMUNITY CONTENT
 
 ### Create Post
+
 **POST** `/community/posts`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "text": "Just completed an amazing beach cleanup! Collected 50kg of plastic waste!",
-  "mediaUrls": ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"],
+  "mediaUrls": [
+    "https://example.com/photo1.jpg",
+    "https://example.com/photo2.jpg"
+  ],
   "visibility": "PUBLIC"
 }
 ```
 
 **Visibility:**
+
 - `PUBLIC` - Everyone can see
 - `AUTHENTICATED` - Only logged-in users
 
 ### Get All Posts (Public with optional auth)
+
 **GET** `/community/posts?page=1&limit=10&authorId=OPTIONAL_USER_ID`
 
 Optional Header:
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Get Post by ID
+
 **GET** `/community/posts/:postId`
 
 ### Create Comment
+
 **POST** `/community/posts/:postId/comments`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "text": "Great work! Keep it up!"
@@ -437,41 +514,51 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Get Comments
+
 **GET** `/community/posts/:postId/comments?page=1&limit=20`
 
 ### Like Post
+
 **POST** `/community/posts/:postId/like`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Unlike Post
+
 **DELETE** `/community/posts/:postId/like`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Share Post
+
 **POST** `/community/posts/:postId/share`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Update Post (Author only)
+
 **PATCH** `/community/posts/:postId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Body:**
+
 ```json
 {
   "text": "Updated post text",
@@ -480,9 +567,11 @@ Authorization: Bearer YOUR_TOKEN
 ```
 
 ### Delete Post/Comment (Author only)
+
 **DELETE** `/community/content/:contentId`
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
@@ -535,15 +624,19 @@ Authorization: Bearer YOUR_TOKEN
 ## Common Issues
 
 ### Issue: "Unauthorized" Error
+
 **Solution:** Make sure you include the `Authorization: Bearer TOKEN` header
 
 ### Issue: "User not found" when testing chat
+
 **Solution:** Make sure users exist in database before adding to chat groups
 
 ### Issue: Firebase errors
+
 **Solution:** Use mock mode (default) for testing without Firebase setup
 
 ### Issue: "Forbidden" Error
+
 **Solution:** Check that your user has the correct role for the endpoint
 
 ---
@@ -565,6 +658,7 @@ Create these in Postman:
 ## API Documentation
 
 Swagger documentation available at:
+
 ```
 http://localhost:4000/api-docs
 ```

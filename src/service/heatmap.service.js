@@ -20,8 +20,7 @@ const RISK_LEVELS = {
 
 class HeatmapService {
   constructor() {
-    this.mlServiceUrl =
-      process.env.ML_SERVICE_URL || 'http://localhost:5001';
+    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:5001';
   }
 
   /**
@@ -141,7 +140,11 @@ class HeatmapService {
     }
 
     if (beaches.length === 0) {
-      return { predictions: [], generatedAt: new Date().toISOString(), fromCache: false };
+      return {
+        predictions: [],
+        generatedAt: new Date().toISOString(),
+        fromCache: false,
+      };
     }
 
     // Build predictions for each beach concurrently
@@ -158,12 +161,16 @@ class HeatmapService {
         const weatherForecast = await weatherService.getForecast(lat, lon);
 
         // Get ML (or fallback) predictions
-        const dailyPredictions = await this.callMLService(beach, weatherForecast);
+        const dailyPredictions = await this.callMLService(
+          beach,
+          weatherForecast
+        );
 
         // Compute the overall risk for today (day 0) for the map pin
-        const todayRisk = Array.isArray(dailyPredictions) && dailyPredictions.length > 0
-          ? dailyPredictions[0]
-          : null;
+        const todayRisk =
+          Array.isArray(dailyPredictions) && dailyPredictions.length > 0
+            ? dailyPredictions[0]
+            : null;
 
         return {
           beachId: beach._id,

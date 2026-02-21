@@ -14,9 +14,9 @@ const EventSchema = new mongoose.Schema(
       maxlength: 2000,
     },
     beachId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Beach',
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Beach',
+      required: true,
     },
     startDate: {
       type: Date,

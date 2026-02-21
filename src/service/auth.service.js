@@ -1,8 +1,11 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generateToken } = require('../config/jwt');
+const chatService = require('./chat.service');
+const { ROLES } = require('../constants/roles');
+const logger = require('../config/logger');
 
-const registerUser = async ({ email, password, role }) => {
+const registerUser = async ({ email, password, name, address, phone, role }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('USER_EXISTS');
@@ -13,10 +16,21 @@ const registerUser = async ({ email, password, role }) => {
   const user = new User({
     email,
     password: hashed,
-    role: role || 'volunteer',
+    name,
+    address,
+    phone,
+    role: role || ROLES.VOLUNTEER,
   });
 
   await user.save();
+
+  // Auto-add to GLOBAL_VOLUNTEER group
+  try {
+    await chatService.addToGlobalVolunteerGroup(user._id.toString());
+  } catch (error) {
+    logger.error('Failed to add user to global volunteer group:', error);
+    // Don't fail registration if chat group assignment fails
+  }
 
   const token = generateToken(user);
 
@@ -36,7 +50,7 @@ const loginUser = async ({ email, password }) => {
     throw new Error('INVALID_CREDENTIALS');
   }
 
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error('INVALID_CREDENTIALS');
   }
@@ -68,12 +82,23 @@ const findOrCreateGoogleUser = async (profile) => {
     }
   }
 
-  return await User.create({
+  // Create new user
+  user = await User.create({
     googleId: profile.id,
     email,
     name: profile.displayName,
-    role: 'volunteer',
+    role: ROLES.VOLUNTEER,
   });
+
+  // Auto-add to GLOBAL_VOLUNTEER group
+  try {
+    await chatService.addToGlobalVolunteerGroup(user._id.toString());
+  } catch (error) {
+    logger.error('Failed to add user to global volunteer group:', error);
+    // Don't fail registration if chat group assignment fails
+  }
+
+  return user;
 };
 
 module.exports = {

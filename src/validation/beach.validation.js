@@ -8,7 +8,7 @@ const beachValidation = {
       location: Joi.object({
         address: Joi.string().required().trim(),
         city: Joi.string().required().trim(),
-        country: Joi.string().trim().default('Singapore'),
+        country: Joi.string().trim().default('Sri Lanka'),
         coordinates: Joi.object({
           type: Joi.string().valid('Point').default('Point'),
           coordinates: Joi.array().items(Joi.number()).length(2),

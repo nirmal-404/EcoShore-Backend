@@ -3,17 +3,21 @@
 ## Quick Start
 
 ### 1. Start Your Server
+
 ```bash
 npm run dev
 ```
 
 ### 2. Access Swagger UI
+
 Open your browser and go to:
+
 ```
 http://localhost:4000/api-docs
 ```
 
 ### 3. Start Testing!
+
 - All endpoints are documented with examples
 - Click "Try it out" button on any endpoint
 - Fill in the parameters
@@ -29,8 +33,9 @@ http://localhost:4000/api-docs
 2. Find **POST /auth/register** or **POST /auth/login**
 3. Click **"Try it out"**
 4. Enter request body:
-3. Click **"Try it out"**
-4. Enter request body:
+5. Click **"Try it out"**
+6. Enter request body:
+
 ```json
 {
   "email": "volunteer@test.com",
@@ -38,6 +43,7 @@ http://localhost:4000/api-docs
   "name": "Test Volunteer"
 }
 ```
+
 5. Click **"Execute"**
 6. **Copy the token** from the response
 
@@ -48,7 +54,7 @@ http://localhost:4000/api-docs
    ```
    Bearer YOUR_TOKEN_HERE
    ```
-   *(Replace YOUR_TOKEN_HERE with the actual token you copied)*
+   _(Replace YOUR_TOKEN_HERE with the actual token you copied)_
 3. Click **"Authorize"**
 4. Click **"Close"**
 
@@ -59,6 +65,7 @@ Now all authenticated endpoints will use this token automatically! 🎉
 ## Environment Configuration
 
 ### Required .env Variables
+
 ```env
 PORT=4000
 MONGO_URI=mongodb://localhost:27017/ecoshore
@@ -74,6 +81,7 @@ NODE_ENV=development
 ```
 
 ### Firebase Setup (Optional - for Chat Persistence)
+
 - **Default:** Chat works in **mock mode** (no setup needed)
 - **Full Firebase:** See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for instructions
 
@@ -107,11 +115,13 @@ NODE_ENV=development
    - Make sure you're authorized (Bearer token set)
    - Enter reason:
    - Enter reason:
+
    ```json
    {
      "reason": "I have 5 years experience organizing beach cleanups"
    }
    ```
+
    - Execute
    - Note the request ID from response
 
@@ -122,16 +132,17 @@ NODE_ENV=development
 #### As Admin:
 
 3. **Create Admin User** (in MongoDB):
+
    ```javascript
    db.users.insertOne({
-     email: "admin@test.com",
-     password: "$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG", // "password123"
-     name: "Admin User",
-     role: "admin",
+     email: 'admin@test.com',
+     password: '$2b$10$SVfgYN3PBMve20G25f8xC.yuuIN/.vpz36CFO1vQCvCwGpbEvgcSG', // "password123"
+     name: 'Admin User',
+     role: 'admin',
      isDeleted: false,
      createdAt: new Date(),
-     updatedAt: new Date()
-   })
+     updatedAt: new Date(),
+   });
    ```
 
 4. **Login as Admin**
@@ -145,11 +156,13 @@ NODE_ENV=development
 6. **PATCH /organizer-requests/{requestId}/review**
    - Enter the requestId from step 1
    - Enter body:
+
    ```json
    {
      "action": "APPROVE"
    }
    ```
+
    - Execute
 
 7. **User is now promoted!** Login as volunteer again to get new token with organizer role
@@ -166,6 +179,7 @@ NODE_ENV=development
    - Click "Try it out"
    - Enter event details:
    - Enter event details:
+
    ```json
    {
      "title": "Beach Cleanup - Santa Monica",
@@ -181,6 +195,7 @@ NODE_ENV=development
      "tags": ["beach-cleanup", "environment", "community"]
    }
    ```
+
    - Execute
    - **Note:** Event automatically creates a chat group!
    - Copy eventId and chatGroupId from response
@@ -207,6 +222,7 @@ NODE_ENV=development
 7. **PATCH /events/{eventId}**
    - Update event details
    - Enter fields to update:
+
    ```json
    {
      "title": "Updated Event Title",
@@ -224,6 +240,7 @@ NODE_ENV=development
 #### Create & Manage Chat Groups:
 
 1. **POST /chat/groups** (Organizer/Admin only)
+
    ```json
    {
      "name": "Volunteer Coordination",
@@ -231,9 +248,10 @@ NODE_ENV=development
      "type": "ORGANIZER_PRIVATE"
    }
    ```
+
    **Types:**
    - `GLOBAL_VOLUNTEER` - All volunteers
-   - `ORGANIZER_PRIVATE` - Organizers only  
+   - `ORGANIZER_PRIVATE` - Organizers only
    - `EVENT_GROUP` - Event-specific (auto-created)
 
 2. **GET /chat/groups**
@@ -247,6 +265,7 @@ NODE_ENV=development
 4. **POST /chat/groups/{groupId}/messages**
    - Enter groupId
    - Enter message:
+
    ```json
    {
      "text": "Hello everyone! Looking forward to the cleanup!",
@@ -267,6 +286,7 @@ NODE_ENV=development
 
 8. **POST /chat/groups/{groupId}/members**
    - Add member (admin only):
+
    ```json
    {
      "userId": "USER_ID_HERE"
@@ -291,13 +311,18 @@ NODE_ENV=development
 #### Create & Manage Posts:
 
 1. **POST /community/posts**
+
    ```json
    {
      "text": "Just completed an amazing beach cleanup! Collected 50kg of plastic waste!",
-     "mediaUrls": ["https://example.com/photo1.jpg", "https://example.com/photo2.jpg"],
+     "mediaUrls": [
+       "https://example.com/photo1.jpg",
+       "https://example.com/photo2.jpg"
+     ],
      "visibility": "PUBLIC"
    }
    ```
+
    **Visibility:**
    - `PUBLIC` - Everyone can see
    - `AUTHENTICATED` - Only logged-in users
@@ -321,6 +346,7 @@ NODE_ENV=development
 #### Interact with Posts:
 
 5. **POST /community/posts/{postId}/comments**
+
    ```json
    {
      "text": "Great work! Keep it up!"
@@ -347,15 +373,18 @@ NODE_ENV=development
 ## Swagger UI Tips
 
 ### 🔓 Authorization
+
 - Always authorize after getting your token
 - Click the lock icon next to any endpoint to see if it requires auth
 - Green lock = authorized, red lock = needs authorization
 
 ### 📋 Schema Models
+
 - Click "Schemas" at the bottom to see all data models
 - Shows field types, requirements, and examples
 
 ### 💾 Try Different Responses
+
 - Swagger shows example responses for each status code
 - 200 = Success
 - 400 = Bad Request
@@ -364,6 +393,7 @@ NODE_ENV=development
 - 404 = Not Found
 
 ### 🔄 Testing Multiple Users
+
 1. Register/Login as User 1 → Copy token
 2. Authorize with User 1 token → Test endpoints
 3. Register/Login as User 2 → Copy new token
@@ -375,6 +405,7 @@ NODE_ENV=development
 ## Common Testing Scenarios
 
 ### Scenario 1: End-to-End Event Flow
+
 ```
 1. Register volunteer A
 2. Register volunteer B
@@ -389,6 +420,7 @@ NODE_ENV=development
 ```
 
 ### Scenario 2: Role-Based Access Control
+
 ```
 1. Try creating event as volunteer → Should fail (403)
 2. Apply for organizer role
@@ -398,6 +430,7 @@ NODE_ENV=development
 ```
 
 ### Scenario 3: Chat Group Management
+
 ```
 1. Auto-join GLOBAL_VOLUNTEER group on registration
 2. Create ORGANIZER_PRIVATE group
@@ -412,11 +445,13 @@ NODE_ENV=development
 ## Quick Reference
 
 ### Authentication Endpoints
+
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - Login and get token
 - `GET /auth/google` - Google OAuth
 
 ### Organizer Requests
+
 - `POST /organizer-requests` - Apply for organizer role
 - `GET /organizer-requests/me` - Get my request
 - `GET /organizer-requests` - Get all requests (admin)
@@ -424,6 +459,7 @@ NODE_ENV=development
 - `DELETE /organizer-requests/{id}` - Delete request
 
 ### Events
+
 - `POST /events` - Create event (organizer/admin)
 - `GET /events` - List all events (public)
 - `GET /events/{id}` - Get event details (public)
@@ -433,6 +469,7 @@ NODE_ENV=development
 - `POST /events/{id}/leave` - Leave event
 
 ### Chat
+
 - `POST /chat/groups` - Create chat group (organizer/admin)
 - `GET /chat/groups` - Get my groups
 - `GET /chat/groups/{id}` - Get group details
@@ -444,6 +481,7 @@ NODE_ENV=development
 - `DELETE /chat/groups/{id}/members/{userId}` - Remove member
 
 ### Community
+
 - `POST /community/posts` - Create post
 - `GET /community/posts` - List posts (public)
 - `GET /community/posts/{id}` - Get post details
@@ -460,24 +498,31 @@ NODE_ENV=development
 ## Troubleshooting
 
 ### Issue: "Unauthorized" (401)
+
 **Solution:** Click Authorize button and enter `Bearer YOUR_TOKEN`
 
 ### Issue: "Forbidden" (403)
+
 **Solution:** Check your role. You may need organizer/admin role for this endpoint.
 
 ### Issue: Swagger UI won't load
+
 **Solutions:**
+
 - Check server is running: `npm run dev`
 - Visit: http://localhost:4000/api-docs
 - Check console for errors
 
 ### Issue: Token expired
+
 **Solution:** Login again to get a fresh token, then re-authorize Swagger
 
 ### Issue: Can't find event/chat/post
+
 **Solution:** Make sure you created the resource first and copied the correct ID
 
 ### Issue: Firebase errors in console
+
 **Solution:** App runs in mock mode by default. Messages work but don't persist. See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for full integration.
 
 ---
@@ -485,7 +530,7 @@ NODE_ENV=development
 ## Additional Resources
 
 - **Server URL:** http://localhost:4000
-- **Swagger UI:** http://localhost:4000/api-docs  
+- **Swagger UI:** http://localhost:4000/api-docs
 - **Firebase Setup:** See [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
 - **Setup Status:** See [SETUP_STATUS.md](SETUP_STATUS.md)
 
@@ -494,6 +539,7 @@ NODE_ENV=development
 ## Notes
 
 ✅ **Swagger Benefits:**
+
 - No need to manually add headers to every request
 - Built-in request/response validation
 - Interactive documentation
@@ -501,6 +547,7 @@ NODE_ENV=development
 - Easy to test different user roles
 
 ℹ️ **Key Points:**
+
 - Chat works in **mock mode** by default (no Firebase needed)
 - Events automatically create chat groups
 - Volunteers auto-join GLOBAL_VOLUNTEER group on registration
@@ -508,6 +555,7 @@ NODE_ENV=development
 - Most resources use soft deletes (isDeleted flag)
 
 🚀 **Ready to Test:**
+
 1. Start server: `npm run dev`
 2. Open: http://localhost:4000/api-docs
 3. Register → Get token → Authorize → Start testing!

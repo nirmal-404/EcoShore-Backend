@@ -13,15 +13,11 @@ const heatmapValidation = {
   // GET /api/heatmap/:beachId — validate the MongoDB ObjectId param
   getBeachPrediction: {
     params: Joi.object({
-      beachId: Joi.string()
-        .hex()
-        .length(24)
-        .required()
-        .messages({
-          'string.hex': 'beachId must be a valid MongoDB ObjectId (hex)',
-          'string.length': 'beachId must be exactly 24 characters',
-          'any.required': 'beachId is required',
-        }),
+      beachId: Joi.string().hex().length(24).required().messages({
+        'string.hex': 'beachId must be a valid MongoDB ObjectId (hex)',
+        'string.length': 'beachId must be exactly 24 characters',
+        'any.required': 'beachId is required',
+      }),
     }),
   },
 

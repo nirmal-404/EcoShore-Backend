@@ -128,7 +128,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/agents/{agentId}/reassign:
+ * /api/agents/{agentId}/reassign/{beachId}:
  *   patch:
  *     summary: Reassign agent to a different beach (admin only)
  *     tags: [Agents]
@@ -140,16 +140,11 @@ router.delete(
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [assignedBeach]
- *             properties:
- *               assignedBeach:
- *                 type: string
+ *       - in: path
+ *         name: beachId
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Agent reassigned successfully
@@ -157,7 +152,7 @@ router.delete(
  *         description: Agent or beach not found
  */
 router.patch(
-  '/:agentId/reassign',
+  '/:agentId/reassign/:beachId',
   auth('admin'),
   validate(agentValidation.reassignAgent),
   agentController.reassignAgent

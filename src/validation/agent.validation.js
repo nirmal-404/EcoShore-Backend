@@ -24,9 +24,7 @@ const agentValidation = {
   reassignAgent: {
     params: Joi.object({
       agentId: Joi.string().hex().length(24).required(),
-    }),
-    body: Joi.object({
-      assignedBeach: Joi.string().hex().length(24).required(),
+      beachId: Joi.string().hex().length(24).required(),
     }),
   },
 

@@ -74,11 +74,11 @@ class AgentController {
     return ResponseHandler.success(res, null, 'Agent deleted successfully');
   });
 
-  // PATCH /api/agents/:agentId/reassign  (admin only)
+  // PATCH /api/agents/:agentId/reassign/:beachId  (admin only)
   reassignAgent = catchAsync(async (req, res) => {
     const agent = await agentService.reassignAgent(
       req.params.agentId,
-      req.body.assignedBeach
+      req.params.beachId
     );
     return ResponseHandler.success(
       res,

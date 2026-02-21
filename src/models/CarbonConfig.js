@@ -33,7 +33,6 @@ const carbonConfigSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
-      index: true,
     },
 
     // Validity period

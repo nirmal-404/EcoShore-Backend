@@ -5,7 +5,14 @@ const chatService = require('./chat.service');
 const { ROLES } = require('../constants/roles');
 const logger = require('../config/logger');
 
-const registerUser = async ({ email, password, name, address, phone, role }) => {
+const registerUser = async ({
+  email,
+  password,
+  name,
+  address,
+  phone,
+  role,
+}) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('USER_EXISTS');
@@ -101,8 +108,51 @@ const findOrCreateGoogleUser = async (profile) => {
   return user;
 };
 
+const registerAgent = async ({ email, password, name, nic, assignedBeach }) => {
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    throw new Error('USER_EXISTS');
+  }
+
+  const existingNic = await User.findOne({ nic });
+  if (existingNic) {
+    throw new Error('NIC_EXISTS');
+  }
+
+  const Beach = require('../models/Beach');
+  const beach = await Beach.findById(assignedBeach);
+  if (!beach || !beach.isActive) {
+    throw new Error('BEACH_NOT_FOUND');
+  }
+
+  const hashed = await bcrypt.hash(password, 10);
+
+  const agent = new User({
+    email,
+    password: hashed,
+    name,
+    nic,
+    assignedBeach,
+    role: 'agent',
+  });
+
+  await agent.save();
+
+  return {
+    agent: {
+      id: agent._id,
+      email: agent.email,
+      name: agent.name,
+      nic: agent.nic,
+      assignedBeach: agent.assignedBeach,
+      role: agent.role,
+    },
+  };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   findOrCreateGoogleUser,
+  registerAgent,
 };

@@ -3,9 +3,9 @@ const beachController = require('../controller/beach.controller');
 const beachValidation = require('../validation/beach.validation');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
-const requireAuth = require("../middleware/requireAuth");
-const authorizeRoles = require("../middleware/authorizeRoles");
-const {ROLES} = require("../constants/roles");
+const requireAuth = require('../middleware/requireAuth');
+const authorizeRoles = require('../middleware/authorizeRoles');
+const { ROLES } = require('../constants/roles');
 
 const router = express.Router();
 
@@ -36,8 +36,8 @@ const router = express.Router();
  */
 router.post(
   '/',
-    requireAuth,
-    authorizeRoles(ROLES.ADMIN),
+  requireAuth,
+  authorizeRoles(ROLES.ADMIN),
   validate(beachValidation.createBeach),
   beachController.createBeach
 );
@@ -132,8 +132,8 @@ router.get(
  */
 router.put(
   '/:beachId',
-    requireAuth,
-    authorizeRoles(ROLES.ADMIN),
+  requireAuth,
+  authorizeRoles(ROLES.ADMIN),
   validate(beachValidation.beachId),
   validate(beachValidation.updateBeach),
   beachController.updateBeach
@@ -159,8 +159,8 @@ router.put(
  */
 router.delete(
   '/:beachId',
-    requireAuth,
-    authorizeRoles(ROLES.ADMIN),
+  requireAuth,
+  authorizeRoles(ROLES.ADMIN),
   validate(beachValidation.beachId),
   beachController.deleteBeach
 );

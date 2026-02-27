@@ -19,20 +19,29 @@ class ChatService {
    * Create a chat group
    */
   async createChatGroup(data, creatorId) {
-    const { name, description, type, eventId } = data;
+    const { name, description, type, eventId, members = [] } = data;
 
     // Validate eventId if provided
     if (eventId) {
       validateObjectId(eventId, 'Event ID');
     }
 
+    // Include creator and any specified members, making sure there are no duplicates
+    const initialMembers = [...new Set([creatorId, ...members])];
+
     const chatGroup = await ChatGroup.create({
       name,
       description,
       type,
       eventId,
-      members: [creatorId],
+      members: initialMembers,
       admins: [creatorId],
+    });
+
+    // Register empty group into Firebase
+    await this.chatProvider.createChatGroup(chatGroup._id.toString(), {
+      name: chatGroup.name,
+      type: chatGroup.type
     });
 
     return chatGroup;

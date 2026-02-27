@@ -10,6 +10,14 @@ class CommunityContentController {
       const authorId = req.user.id;
       const postData = req.body;
 
+      if (req.files && req.files.length > 0) {
+        const protocol = req.protocol;
+        const host = req.get('host');
+        postData.mediaUrls = req.files.map(
+          (file) => `${protocol}://${host}/uploads/${file.filename}`
+        );
+      }
+
       const post = await communityContentService.createPost(authorId, postData);
 
       res.status(201).json({
@@ -191,6 +199,14 @@ class CommunityContentController {
       const { id } = req.params;
       const userId = req.user.id;
       const updateData = req.body;
+
+      if (req.files && req.files.length > 0) {
+        const protocol = req.protocol;
+        const host = req.get('host');
+        updateData.mediaUrls = req.files.map(
+          (file) => `${protocol}://${host}/uploads/${file.filename}`
+        );
+      }
 
       const post = await communityContentService.updatePost(
         id,

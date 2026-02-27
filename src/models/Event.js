@@ -13,13 +13,10 @@ const EventSchema = new mongoose.Schema(
       required: true,
       maxlength: 2000,
     },
-    location: {
-      type: String,
+    beachId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Beach',
       required: true,
-    },
-    coordinates: {
-      latitude: { type: Number },
-      longitude: { type: Number },
     },
     startDate: {
       type: Date,

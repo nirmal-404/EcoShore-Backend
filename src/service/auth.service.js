@@ -5,7 +5,14 @@ const chatService = require('./chat.service');
 const { ROLES } = require('../constants/roles');
 const logger = require('../config/logger');
 
-const registerUser = async ({ email, password, name, address, phone, role }) => {
+const registerUser = async ({
+  email,
+  password,
+  name,
+  address,
+  phone,
+  role,
+}) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('USER_EXISTS');

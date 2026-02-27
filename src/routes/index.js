@@ -9,6 +9,7 @@ const chatRoutes = require('./chat.routes');
 const communityContentRoutes = require('./communityContent.routes');
 const eventRoutes = require('./event.routes');
 const authRoutes = require('./auth.routes');
+const heatmapRoutes = require('./heatmap.routes');
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.use('/beaches', beachRoutes);
 router.use('/waste-records', wasteRecordRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/carbon-config', carbonConfigRoutes);
+router.use('/heatmap', heatmapRoutes);
 router.use('/agents', agentRoutes);
 router.use('/organizer-requests', organizerRequestRoutes);
 router.use('/chat', chatRoutes);

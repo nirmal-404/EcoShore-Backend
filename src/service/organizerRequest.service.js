@@ -145,10 +145,7 @@ class OrganizerRequestService {
             request.userId.toString()
           );
         } catch (error) {
-          logger.error(
-            'Failed to add user to organizer private group:',
-            error
-          );
+          logger.error('Failed to add user to organizer private group:', error);
           // Continue even if chat group assignment fails
         }
       }

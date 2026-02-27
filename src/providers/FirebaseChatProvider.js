@@ -41,9 +41,11 @@ class FirebaseChatProvider extends IChatProvider {
       
       this.db = admin.database();
       */
-      
+
       this.initialized = true;
-      logger.warn('Firebase disabled - running in mock mode. Add firebase-service-account.json to enable.');
+      logger.warn(
+        'Firebase disabled - running in mock mode. Add firebase-service-account.json to enable.'
+      );
     } catch (error) {
       logger.error('Failed to initialize Firebase:', error);
       throw error;
@@ -75,7 +77,7 @@ class FirebaseChatProvider extends IChatProvider {
       ...message
     };
     */
-    
+
     // Mock implementation
     const mockId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     return {
@@ -115,7 +117,7 @@ class FirebaseChatProvider extends IChatProvider {
     
     return messages;
     */
-    
+
     // Mock implementation
     return [];
   }
@@ -130,7 +132,7 @@ class FirebaseChatProvider extends IChatProvider {
     /*
     await this.db.ref(`chats/${chatGroupId}/messages/${messageId}`).remove();
     */
-    
+
     // Mock implementation
     logger.info(`Mock: Deleted message ${messageId} from chat ${chatGroupId}`);
   }
@@ -154,7 +156,7 @@ class FirebaseChatProvider extends IChatProvider {
       }
     }
     */
-    
+
     // Mock implementation
     logger.info(`Mock: Message ${messageId} marked as seen by user ${userId}`);
   }
@@ -181,7 +183,7 @@ class FirebaseChatProvider extends IChatProvider {
     
     return unreadCount;
     */
-    
+
     // Mock implementation
     return 0;
   }

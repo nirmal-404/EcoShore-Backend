@@ -8,12 +8,26 @@ class OrganizerRequestController {
    */
   async createRequest(req, res, next) {
     try {
-      const { reason } = req.body;
+      const {
+        reason,
+        currentWorkingDetails,
+        pastEventsOrganized,
+        experience,
+        workedOrganizations,
+      } = req.body;
       const userId = req.user.id;
+
+      const requestData = {
+        reason,
+        currentWorkingDetails,
+        pastEventsOrganized,
+        experience,
+        workedOrganizations,
+      };
 
       const request = await organizerRequestService.createRequest(
         userId,
-        reason
+        requestData
       );
 
       res.status(201).json({

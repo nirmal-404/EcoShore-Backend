@@ -17,7 +17,7 @@ class OrganizerRequestService {
    * - Only VOLUNTEER can apply
    * - Only one pending request per user
    */
-  async createRequest(userId, reason) {
+  async createRequest(userId, requestData) {
     validateObjectId(userId, 'User ID');
 
     // Check if user exists and is VOLUNTEER
@@ -43,7 +43,7 @@ class OrganizerRequestService {
     // Create request
     const request = await OrganizerRequest.create({
       userId,
-      reason,
+      ...requestData,
     });
 
     return request;
@@ -63,7 +63,7 @@ class OrganizerRequestService {
 
     const [requests, total] = await Promise.all([
       OrganizerRequest.find(query)
-        .populate('userId', 'name email')
+        .populate('userId', 'name email phone address nic role')
         .populate('reviewedBy', 'name email')
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -90,6 +90,7 @@ class OrganizerRequestService {
     validateObjectId(userId, 'User ID');
 
     const request = await OrganizerRequest.findOne({ userId })
+      .populate('userId', 'name email phone address nic role')
       .populate('reviewedBy', 'name email')
       .lean();
 
@@ -154,7 +155,7 @@ class OrganizerRequestService {
 
       // Return populated request
       return await OrganizerRequest.findById(requestId)
-        .populate('userId', 'name email role')
+        .populate('userId', 'name email phone address nic role')
         .populate('reviewedBy', 'name email')
         .lean();
     } catch (error) {

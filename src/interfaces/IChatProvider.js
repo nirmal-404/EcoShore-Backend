@@ -5,6 +5,16 @@
  */
 class IChatProvider {
   /**
+   * Register a new chat group in the provider
+   * @param {string} chatGroupId - The chat group ID
+   * @param {Object} groupData - Group metadata {name, type}
+   * @returns {Promise<void>}
+   */
+  async createChatGroup(chatGroupId, groupData) {
+    throw new Error('Method not implemented');
+  }
+
+  /**
    * Send a message to a chat group
    * @param {string} chatGroupId - The chat group ID
    * @param {Object} messageData - Message data {senderId, text, mediaUrl}

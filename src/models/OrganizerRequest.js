@@ -13,6 +13,22 @@ const OrganizerRequestSchema = new mongoose.Schema(
       required: true,
       maxlength: 500,
     },
+    currentWorkingDetails: {
+      type: String,
+      maxlength: 500,
+    },
+    pastEventsOrganized: {
+      type: Number,
+      default: 0,
+    },
+    experience: {
+      type: String,
+      maxlength: 1000,
+    },
+    workedOrganizations: {
+      type: String,
+      maxlength: 500,
+    },
     status: {
       type: String,
       enum: ['PENDING', 'APPROVED', 'REJECTED'],

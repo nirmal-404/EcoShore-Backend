@@ -84,6 +84,18 @@ const wasteRecordSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
+
+    // Soft delete fields
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

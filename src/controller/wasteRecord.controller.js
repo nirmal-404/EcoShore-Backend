@@ -171,6 +171,39 @@ class WasteRecordController {
       'Monthly trends retrieved successfully'
     );
   });
+
+  /**
+   * Agent portal: submit a waste record (agent only)
+   */
+  submitWasteRecord = catchAsync(async (req, res) => {
+    const record = await wasteRecordService.submitWasteRecord(
+      req.user,
+      req.body
+    );
+    return ResponseHandler.created(
+      res,
+      { record },
+      'Waste record submitted successfully'
+    );
+  });
+
+  /**
+   * Agent portal: get own submission history (agent only)
+   */
+  getMySubmissions = catchAsync(async (req, res) => {
+    const result = await wasteRecordService.getMySubmissions(
+      req.user,
+      req.query
+    );
+    return ResponseHandler.paginated(
+      res,
+      result.records,
+      req.query.page || 1,
+      req.query.limit || 20,
+      result.pagination.total,
+      'Submissions retrieved successfully'
+    );
+  });
 }
 
 module.exports = new WasteRecordController();

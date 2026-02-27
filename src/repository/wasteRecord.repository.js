@@ -8,18 +8,37 @@ class WasteRecordRepository extends BaseRepository {
   }
 
   /**
-   * Find waste records with complex filtering
+   * Override findById to exclude soft-deleted records
+   */
+  async findById(id) {
+    return this.model.findOne({ _id: id, isDeleted: { $ne: true } });
+  }
+
+  /**
+   * Soft delete a waste record
+   */
+  async delete(id) {
+    return this.model.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    );
+  }
+
+  /**
+   * Find waste records with complex filtering (excludes soft-deleted)
    */
   async findByFilter(filter, sort, skip, limit) {
+    const activeFilter = { ...filter, isDeleted: { $ne: true } };
     return Promise.all([
       this.model
-        .find(filter)
+        .find(activeFilter)
         .sort(sort)
         .skip(skip)
         .limit(parseInt(limit))
         .populate('beachId', 'name location.city')
         .populate('recordedBy', 'name email'),
-      this.model.countDocuments(filter),
+      this.model.countDocuments(activeFilter),
     ]);
   }
 
@@ -31,7 +50,7 @@ class WasteRecordRepository extends BaseRepository {
     startDate = null,
     endDate = null
   ) {
-    const matchStage = { isVerified: true };
+    const matchStage = { isVerified: true, isDeleted: { $ne: true } };
 
     if (beachId) matchStage.beachId = new mongoose.Types.ObjectId(beachId);
     if (startDate || endDate) {
@@ -71,7 +90,7 @@ class WasteRecordRepository extends BaseRepository {
    * Get monthly trend data for forecasting
    */
   async getMonthlyTrends(beachId = null, months = 12) {
-    const matchStage = { isVerified: true };
+    const matchStage = { isVerified: true, isDeleted: { $ne: true } };
     if (beachId) matchStage.beachId = new mongoose.Types.ObjectId(beachId);
 
     const pipeline = [
@@ -115,8 +134,9 @@ class WasteRecordRepository extends BaseRepository {
    * Get carbon offset summary
    */
   async getCarbonOffsetSummary(matchStage) {
+    const activeMatchStage = { ...matchStage, isDeleted: { $ne: true } };
     return await this.model.aggregate([
-      { $match: matchStage },
+      { $match: activeMatchStage },
       {
         $group: {
           _id: null,

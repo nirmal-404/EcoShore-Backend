@@ -10,6 +10,7 @@ const communityContentRoutes = require('./communityContent.routes');
 const eventRoutes = require('./event.routes');
 const authRoutes = require('./auth.routes');
 const heatmapRoutes = require('./heatmap.routes');
+const fileUploadRoutes = require('./fileUpload.routes');
 
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.use('/organizer-requests', organizerRequestRoutes);
 router.use('/chat', chatRoutes);
 router.use('/community', communityContentRoutes);
 router.use('/events', eventRoutes);
+router.use('/upload-file', fileUploadRoutes);
 
 module.exports = router;

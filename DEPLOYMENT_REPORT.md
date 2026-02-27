@@ -71,13 +71,13 @@ version: '3.8'
 services:
   api:
     build: .
-    ports: ["4000:4000"]
+    ports: ['4000:4000']
     env_file: .env
-    volumes: ["./uploads:/app/uploads"]
+    volumes: ['./uploads:/app/uploads']
     depends_on: [ml]
   ml:
     build: ./ml-service
-    ports: ["5001:5001"]
+    ports: ['5001:5001']
 ```
 
 ```bash
@@ -88,11 +88,11 @@ docker-compose up -d
 
 ## Cloud Platforms
 
-| Platform | Notes |
-|----------|-------|
-| **Render** | Web Service with `npm start`; second service for `ml-service/` using `gunicorn -w 2 -b 0.0.0.0:$PORT app:app` |
-| **Railway** | Connect GitHub, add MongoDB plugin, set env vars in dashboard |
-| **AWS EC2** | Ubuntu 22.04, t3.small+, follow PM2 + Nginx steps |
+| Platform    | Notes                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------- |
+| **Render**  | Web Service with `npm start`; second service for `ml-service/` using `gunicorn -w 2 -b 0.0.0.0:$PORT app:app` |
+| **Railway** | Connect GitHub, add MongoDB plugin, set env vars in dashboard                                                 |
+| **AWS EC2** | Ubuntu 22.04, t3.small+, follow PM2 + Nginx steps                                                             |
 
 ---
 

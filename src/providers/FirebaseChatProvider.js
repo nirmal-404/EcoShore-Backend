@@ -58,12 +58,14 @@ class FirebaseChatProvider extends IChatProvider {
       mediaUrl: null,
       createdAt: new Date().toISOString(),
       seenBy: [],
-      isSystemMessage: true
+      isSystemMessage: true,
     };
 
     const messageRef = this.db.ref(`chats/${chatGroupId}/messages`).push();
     await messageRef.set(systemMessage);
-    logger.info(`Registered new chat group ${chatGroupId} on Firebase with initial system message.`);
+    logger.info(
+      `Registered new chat group ${chatGroupId} on Firebase with initial system message.`
+    );
   }
 
   /**
@@ -132,7 +134,9 @@ class FirebaseChatProvider extends IChatProvider {
   async markMessageSeen(chatGroupId, messageId, userId) {
     this.initialize();
 
-    const messageRef = this.db.ref(`chats/${chatGroupId}/messages/${messageId}`);
+    const messageRef = this.db.ref(
+      `chats/${chatGroupId}/messages/${messageId}`
+    );
     const snapshot = await messageRef.once('value');
     const message = snapshot.val();
 

@@ -41,7 +41,7 @@ class ChatService {
     // Register empty group into Firebase
     await this.chatProvider.createChatGroup(chatGroup._id.toString(), {
       name: chatGroup.name,
-      type: chatGroup.type
+      type: chatGroup.type,
     });
 
     return chatGroup;

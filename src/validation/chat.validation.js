@@ -12,14 +12,14 @@ const createChatGroupSchema = {
       .required(),
     eventId: Joi.string().optional(),
     members: Joi.array().items(Joi.string().hex().length(24)).optional(),
-  })
+  }),
 };
 
 const sendMessageSchema = {
   body: Joi.object({
     text: Joi.string().max(2000).optional(),
     mediaUrl: Joi.string().uri().optional(),
-  }).or('text', 'mediaUrl') // At least one must be present
+  }).or('text', 'mediaUrl'), // At least one must be present
 };
 
 const addMemberSchema = {
@@ -27,7 +27,7 @@ const addMemberSchema = {
     userId: Joi.string().required().messages({
       'string.empty': 'User ID is required',
     }),
-  })
+  }),
 };
 
 const promoteMemberSchema = {
@@ -35,7 +35,7 @@ const promoteMemberSchema = {
     userId: Joi.string().required().messages({
       'string.empty': 'User ID is required',
     }),
-  })
+  }),
 };
 
 module.exports = {

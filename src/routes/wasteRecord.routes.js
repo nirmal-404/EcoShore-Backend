@@ -1,13 +1,87 @@
 const express = require('express');
 const wasteRecordController = require('../controller/wasteRecord.controller');
 const wasteRecordValidation = require('../validation/wasteRecord.validation');
+const agentValidation = require('../validation/agent.validation');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
+const authorizeRoles = require('../middleware/authorizeRoles');
 
 const router = express.Router();
 
+// ── Agent Portal Routes (auth handled per-route) ──────────────────────────────
+
 /**
- * All waste record routes require authentication
+ * @swagger
+ * /waste-records/portal/submissions:
+ *   post:
+ *     summary: Submit a waste record (agent only)
+ *     tags: [Waste Records]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [plasticType, weight]
+ *             properties:
+ *               plasticType:
+ *                 type: string
+ *               weight:
+ *                 type: number
+ *               source:
+ *                 type: string
+ *               weather:
+ *                 type: object
+ *               collectionDate:
+ *                 type: string
+ *                 format: date
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Waste record submitted successfully
+ *       403:
+ *         description: Not assigned to any beach
+ */
+router.post(
+  '/portal/submissions',
+  auth('agent'),
+  validate(agentValidation.agentCreateWasteRecord),
+  wasteRecordController.submitWasteRecord
+);
+
+/**
+ * @swagger
+ * /waste-records/portal/submissions:
+ *   get:
+ *     summary: Get own submission history (agent only)
+ *     tags: [Waste Records]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of own submissions
+ */
+router.get(
+  '/portal/submissions',
+  auth('agent'),
+  validate(agentValidation.getMySubmissions),
+  wasteRecordController.getMySubmissions
+);
+
+/**
+ * All remaining waste record routes require authentication
  */
 router.use(auth());
 
@@ -172,6 +246,7 @@ router.put(
  */
 router.delete(
   '/:recordId',
+  authorizeRoles('admin', 'agent'),
   validate(wasteRecordValidation.recordId),
   wasteRecordController.deleteWasteRecord
 );

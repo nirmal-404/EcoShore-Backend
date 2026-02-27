@@ -186,6 +186,12 @@ cd ml-service && python app.py   # ML: http://localhost:5001
 | PATCH  | `/organizer-requests/:id/review` | admin     |
 | DELETE | `/organizer-requests/:id`        | any       |
 
+### File Upload
+
+| Method | Endpoint       | Auth | Role            |
+| ------ | -------------- | ---- | --------------- |
+| POST   | `/upload-file` | Yes  | organizer/admin |
+
 ### ML Microservice `http://localhost:5001`
 
 | Method | Endpoint   | Description          |
@@ -293,6 +299,31 @@ Authorization: Bearer <token>
 }
 ```
 
+### File Upload
+
+```http
+POST /api/upload-file
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+// Form-data:
+// file: [Selected File]
+// folder: "beaches" (optional)
+```
+
+```json
+// 200 OK
+{
+  "success": true,
+  "data": {
+    "url": "https://res.cloudinary.com/...",
+    "public_id": "...",
+    "resource_type": "image",
+    "format": "jpg"
+  }
+}
+```
+
 ### Error Response (all endpoints)
 
 ```json
@@ -323,3 +354,5 @@ See [DEPLOYMENT_REPORT.md](DEPLOYMENT_REPORT.md) for deployment instructions.
 ## Testing
 
 See [TESTING_REPORT.md](TESTING_REPORT.md) for testing instructions.
+
+80% completed

@@ -8,11 +8,11 @@ const { upload } = require('../utils/cloudinary');
 const router = express.Router();
 
 router.post(
-    '/',
-    requireAuth,
-    authorizeRoles(ROLES.ADMIN, ROLES.ORGANIZER),
-    upload.single('file'),
-    fileUploadController.uploadFile
+  '/',
+  requireAuth,
+  authorizeRoles(ROLES.ADMIN, ROLES.ORGANIZER),
+  upload.single('file'),
+  fileUploadController.uploadFile
 );
 
 module.exports = router;

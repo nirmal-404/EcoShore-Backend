@@ -1,5 +1,5 @@
-const cloudinary = require("cloudinary").v2;
-const multer = require("multer");
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -13,20 +13,20 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
-const imageUploadUtil = async (file, folderName = "general") => {
-    // Convert buffer to base64
-    const base64 = file.buffer.toString("base64");
+const imageUploadUtil = async (file, folderName = 'general') => {
+  // Convert buffer to base64
+  const base64 = file.buffer.toString('base64');
 
-    // Construct Cloudinary data URI
-    const dataUri = `data:${file.mimetype};base64,${base64}`;
+  // Construct Cloudinary data URI
+  const dataUri = `data:${file.mimetype};base64,${base64}`;
 
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(dataUri, {
-        folder: `EcoShore/${folderName}`,
-        resource_type: 'auto'
-    });
+  // Upload to Cloudinary
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder: `EcoShore/${folderName}`,
+    resource_type: 'auto',
+  });
 
-    return result;
+  return result;
 };
 
 module.exports = {

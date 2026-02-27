@@ -132,7 +132,7 @@ router.get(
  */
 router.put(
   '/:beachId',
-  auth(),
+  auth('admin'),
   validate(beachValidation.beachId),
   validate(beachValidation.updateBeach),
   beachController.updateBeach
@@ -158,7 +158,7 @@ router.put(
  */
 router.delete(
   '/:beachId',
-  auth(),
+  auth('admin'),
   validate(beachValidation.beachId),
   beachController.deleteBeach
 );

@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
     googleId: { type: String },
     role: {
       type: String,
-      enum: [ROLES.VOLUNTEER, ROLES.ORGANIZER, ROLES.ADMIN],
+      enum: [ROLES.VOLUNTEER, ROLES.ORGANIZER, ROLES.ADMIN,ROLES.AGENT],
       default: ROLES.VOLUNTEER,
     },
       assignedBeach: {
@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-  },
+  },  
   { timestamps: true }
 );
 

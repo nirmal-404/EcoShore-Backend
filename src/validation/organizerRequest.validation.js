@@ -10,7 +10,7 @@ const createOrganizerRequestSchema = {
     pastEventsOrganized: Joi.number().integer().min(0).optional(),
     experience: Joi.string().max(1000).optional(),
     workedOrganizations: Joi.string().max(500).optional(),
-  })
+  }),
 };
 
 const reviewOrganizerRequestSchema = {
@@ -24,7 +24,7 @@ const reviewOrganizerRequestSchema = {
       then: Joi.required(),
       otherwise: Joi.optional(),
     }),
-  })
+  }),
 };
 
 module.exports = {

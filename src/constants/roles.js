@@ -2,7 +2,7 @@ const ROLES = {
   VOLUNTEER: 'volunteer',
   ORGANIZER: 'organizer',
   ADMIN: 'admin',
-  AGENT: 'agent'
+  AGENT: 'agent',
 };
 
 const ROLE_HIERARCHY = {

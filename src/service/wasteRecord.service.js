@@ -1,7 +1,11 @@
 const wasteRecordRepository = require('../repository/wasteRecord.repository');
 const agentRepository = require('../repository/agent.repository');
 const { Beach, WasteRecord } = require('../models');
-const { NotFoundError, ValidationError, AuthorizationError } = require('../utils/AppError');
+const {
+  NotFoundError,
+  ValidationError,
+  AuthorizationError,
+} = require('../utils/AppError');
 
 class WasteRecordService {
   /**

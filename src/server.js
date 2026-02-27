@@ -31,7 +31,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const status = err.status || 'error';
-  logger.error(`[${req.method}] ${req.originalUrl} → ${statusCode}: ${err.message}`);
+  logger.error(
+    `[${req.method}] ${req.originalUrl} → ${statusCode}: ${err.message}`
+  );
   res.status(statusCode).json({
     status,
     message: err.message || 'Internal Server Error',

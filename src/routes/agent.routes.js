@@ -128,7 +128,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/agents/{agentId}/reassign:
+ * /api/agents/{agentId}/reassign/{beachId}:
  *   patch:
  *     summary: Reassign agent to a different beach (admin only)
  *     tags: [Agents]
@@ -140,16 +140,11 @@ router.delete(
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [assignedBeach]
- *             properties:
- *               assignedBeach:
- *                 type: string
+ *       - in: path
+ *         name: beachId
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Agent reassigned successfully
@@ -157,82 +152,10 @@ router.delete(
  *         description: Agent or beach not found
  */
 router.patch(
-  '/:agentId/reassign',
+  '/:agentId/reassign/:beachId',
   auth('admin'),
   validate(agentValidation.reassignAgent),
   agentController.reassignAgent
-);
-
-// ── Agent Portal Routes ───────────────────────────────────────────────────────
-
-/**
- * @swagger
- * /api/agents/portal/submissions:
- *   post:
- *     summary: Submit a waste record (agent only)
- *     tags: [Agents]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [plasticType, weight]
- *             properties:
- *               plasticType:
- *                 type: string
- *               weight:
- *                 type: number
- *               source:
- *                 type: string
- *               weather:
- *                 type: object
- *               collectionDate:
- *                 type: string
- *                 format: date
- *               notes:
- *                 type: string
- *     responses:
- *       201:
- *         description: Waste record submitted successfully
- *       403:
- *         description: Not assigned to any beach
- */
-router.post(
-  '/portal/submissions',
-  auth('agent'),
-  validate(agentValidation.agentCreateWasteRecord),
-  agentController.submitWasteRecord
-);
-
-/**
- * @swagger
- * /api/agents/portal/submissions:
- *   get:
- *     summary: Get own submission history (agent only)
- *     tags: [Agents]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Paginated list of own submissions
- */
-router.get(
-  '/portal/submissions',
-  auth('agent'),
-  validate(agentValidation.getMySubmissions),
-  agentController.getMySubmissions
 );
 
 module.exports = router;

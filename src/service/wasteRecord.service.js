@@ -1,6 +1,7 @@
 const wasteRecordRepository = require('../repository/wasteRecord.repository');
-const { Beach } = require('../models');
-const { NotFoundError, ValidationError } = require('../utils/AppError');
+const agentRepository = require('../repository/agent.repository');
+const { Beach, WasteRecord } = require('../models');
+const { NotFoundError, ValidationError, AuthorizationError } = require('../utils/AppError');
 
 class WasteRecordService {
   /**
@@ -164,6 +165,69 @@ class WasteRecordService {
    */
   async getMonthlyTrends(beachId, months = 12) {
     return await wasteRecordRepository.getMonthlyTrends(beachId, months);
+  }
+
+  /**
+   * Agent portal: submit a waste record
+   * Beach is always resolved from DB (not JWT) to handle mid-session reassignment
+   */
+  async submitWasteRecord(agentUser, wasteData) {
+    const freshAgent = await agentRepository.findAgentById(agentUser.id);
+    if (!freshAgent) throw new NotFoundError('Agent');
+
+    if (!freshAgent.assignedBeach) {
+      throw new AuthorizationError(
+        'You are not assigned to any beach. Contact admin.'
+      );
+    }
+
+    const beach = await Beach.findById(freshAgent.assignedBeach);
+    if (!beach || !beach.isActive) {
+      throw new AuthorizationError(
+        'Your assigned beach is no longer active. Contact admin.'
+      );
+    }
+
+    const record = new WasteRecord({
+      ...wasteData,
+      beachId: freshAgent.assignedBeach,
+      recordedBy: agentUser.id,
+    });
+
+    await record.save();
+    return record;
+  }
+
+  /**
+   * Agent portal: view own submission history
+   */
+  async getMySubmissions(agentUser, query = {}) {
+    const { page = 1, limit = 20 } = query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const filter = {
+      recordedBy: agentUser.id,
+      isDeleted: { $ne: true },
+    };
+
+    const [records, total] = await Promise.all([
+      WasteRecord.find(filter)
+        .sort({ collectionDate: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate('beachId', 'name location.city'),
+      WasteRecord.countDocuments(filter),
+    ]);
+
+    return {
+      records,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    };
   }
 }
 

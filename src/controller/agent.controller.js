@@ -74,39 +74,16 @@ class AgentController {
     return ResponseHandler.success(res, null, 'Agent deleted successfully');
   });
 
-  // PATCH /api/agents/:agentId/reassign  (admin only)
+  // PATCH /api/agents/:agentId/reassign/:beachId  (admin only)
   reassignAgent = catchAsync(async (req, res) => {
     const agent = await agentService.reassignAgent(
       req.params.agentId,
-      req.body.assignedBeach
+      req.params.beachId
     );
     return ResponseHandler.success(
       res,
       { agent: this.formatAgentResponse(agent) },
       'Agent reassigned successfully'
-    );
-  });
-
-  // POST /api/agents/portal/waste-records  (agent only)
-  submitWasteRecord = catchAsync(async (req, res) => {
-    const record = await agentService.submitWasteRecord(req.user, req.body);
-    return ResponseHandler.created(
-      res,
-      { record },
-      'Waste record submitted successfully'
-    );
-  });
-
-  // GET /api/agents/portal/waste-records  (agent only)
-  getMySubmissions = catchAsync(async (req, res) => {
-    const result = await agentService.getMySubmissions(req.user, req.query);
-    return ResponseHandler.paginated(
-      res,
-      result.records,
-      req.query.page || 1,
-      req.query.limit || 20,
-      result.pagination.total,
-      'Submissions retrieved successfully'
     );
   });
 }

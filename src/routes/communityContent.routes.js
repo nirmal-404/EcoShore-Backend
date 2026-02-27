@@ -3,6 +3,7 @@ const communityContentController = require('../controller/community.controller')
 const requireAuth = require('../middleware/requireAuth');
 const authOptional = require('../middleware/authOptional');
 const validate = require('../middleware/validate');
+const upload = require('../middleware/upload');
 const {
   createPostSchema,
   createCommentSchema,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post(
   '/posts',
   requireAuth,
+  upload.array('images', 5),
   validate(createPostSchema),
   communityContentController.createPost
 );
@@ -45,6 +47,7 @@ router.get('/posts/:id', authOptional, communityContentController.getPostById);
 router.patch(
   '/posts/:id',
   requireAuth,
+  upload.array('images', 5),
   validate(updatePostSchema),
   communityContentController.updatePost
 );

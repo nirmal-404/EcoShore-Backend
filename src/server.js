@@ -6,6 +6,7 @@ dotenv.config();
 const express = require('express');
 const passport = require('passport');
 const cors = require('cors');
+const helmet = require('helmet');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
@@ -41,8 +42,26 @@ if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
 
 const app = express();
 
-app.use(express.json());
 app.use(cors({ origin: '*' }));
+app.use(express.json());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https:'],
+      fontSrc: ["'self'", 'data:'],
+    },
+  })
+);
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+  })
+);
 app.use(passport.initialize());
 
 // Serve static files from the uploads directory
@@ -56,8 +75,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 

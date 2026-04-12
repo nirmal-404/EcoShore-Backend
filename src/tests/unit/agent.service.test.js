@@ -84,14 +84,20 @@ describe('Agent Service Unit Tests', () => {
           name: 'Agent 1',
           email: 'agent1@test.com',
           role: 'agent',
-          assignedBeach: { _id: new mongoose.Types.ObjectId(), name: 'Beach 1' },
+          assignedBeach: {
+            _id: new mongoose.Types.ObjectId(),
+            name: 'Beach 1',
+          },
         },
         {
           _id: new mongoose.Types.ObjectId(),
           name: 'Agent 2',
           email: 'agent2@test.com',
           role: 'agent',
-          assignedBeach: { _id: new mongoose.Types.ObjectId(), name: 'Beach 2' },
+          assignedBeach: {
+            _id: new mongoose.Types.ObjectId(),
+            name: 'Beach 2',
+          },
         },
       ];
 
@@ -136,7 +142,9 @@ describe('Agent Service Unit Tests', () => {
 
       const result = await agentService.getAgentById(agentId.toString());
 
-      expect(agentRepository.findAgentById).toHaveBeenCalledWith(agentId.toString());
+      expect(agentRepository.findAgentById).toHaveBeenCalledWith(
+        agentId.toString()
+      );
       expect(result._id).toEqual(agentId);
       expect(result.name).toBe('Test Agent');
     });
@@ -146,9 +154,9 @@ describe('Agent Service Unit Tests', () => {
 
       agentRepository.findAgentById.mockResolvedValue(null);
 
-      await expect(agentService.getAgentById(agentId.toString())).rejects.toThrow(
-        NotFoundError
-      );
+      await expect(
+        agentService.getAgentById(agentId.toString())
+      ).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -177,7 +185,9 @@ describe('Agent Service Unit Tests', () => {
 
       const result = await agentService.deleteAgent(agentId.toString());
 
-      expect(agentRepository.findAgentById).toHaveBeenCalledWith(agentId.toString());
+      expect(agentRepository.findAgentById).toHaveBeenCalledWith(
+        agentId.toString()
+      );
       expect(Beach.findById).toHaveBeenCalledWith(beachId);
       expect(mockBeach.save).toHaveBeenCalled();
       expect(agentRepository.delete).toHaveBeenCalledWith(agentId.toString());
@@ -189,9 +199,9 @@ describe('Agent Service Unit Tests', () => {
 
       agentRepository.findAgentById.mockResolvedValue(null);
 
-      await expect(agentService.deleteAgent(agentId.toString())).rejects.toThrow(
-        NotFoundError
-      );
+      await expect(
+        agentService.deleteAgent(agentId.toString())
+      ).rejects.toThrow(NotFoundError);
     });
 
     it('should handle deletion when agent has no assigned beach', async () => {
@@ -256,12 +266,16 @@ describe('Agent Service Unit Tests', () => {
         newBeachId.toString()
       );
 
-      expect(agentRepository.findAgentById).toHaveBeenCalledWith(agentId.toString());
+      expect(agentRepository.findAgentById).toHaveBeenCalledWith(
+        agentId.toString()
+      );
       expect(Beach.findById).toHaveBeenNthCalledWith(1, newBeachId.toString());
       expect(Beach.findById).toHaveBeenNthCalledWith(2, oldBeachId);
       expect(mockOldBeach.save).toHaveBeenCalled();
       // Check if agentId was added to new beach's assignedAgents
-      expect(mockNewBeach.assignedAgents.map(id => id.toString())).toContain(agentId.toString());
+      expect(mockNewBeach.assignedAgents.map((id) => id.toString())).toContain(
+        agentId.toString()
+      );
       expect(mockNewBeach.save).toHaveBeenCalled();
       expect(agentRepository.update).toHaveBeenCalledWith(agentId.toString(), {
         assignedBeach: newBeachId.toString(),
@@ -383,7 +397,9 @@ describe('Agent Service Unit Tests', () => {
       );
 
       expect(Beach.findById).toHaveBeenCalledTimes(1);
-      expect(mockNewBeach.assignedAgents.map(id => id.toString())).toContain(agentId.toString());
+      expect(mockNewBeach.assignedAgents.map((id) => id.toString())).toContain(
+        agentId.toString()
+      );
       expect(mockNewBeach.save).toHaveBeenCalled();
     });
   });

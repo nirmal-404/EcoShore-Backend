@@ -42,7 +42,7 @@ if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: '*', }));
+app.use(cors({ origin: '*' }));
 app.use(passport.initialize());
 
 // Serve static files from the uploads directory

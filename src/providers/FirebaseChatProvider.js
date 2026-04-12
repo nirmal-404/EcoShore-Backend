@@ -46,9 +46,7 @@ class FirebaseChatProvider extends IChatProvider {
       }
 
       if (!process.env.FIREBASE_DATABASE_URL) {
-        throw new Error(
-          'Missing FIREBASE_DATABASE_URL environment variable.'
-        );
+        throw new Error('Missing FIREBASE_DATABASE_URL environment variable.');
       }
 
       if (!admin.apps.length) {

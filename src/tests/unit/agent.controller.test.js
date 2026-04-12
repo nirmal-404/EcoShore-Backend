@@ -176,9 +176,7 @@ describe('Agent Controller Unit Tests', () => {
       const req = { body: requestBody };
       const res = mockResponse();
 
-      agentService.createAgent.mockRejectedValue(
-        new Error('BEACH_NOT_FOUND')
-      );
+      agentService.createAgent.mockRejectedValue(new Error('BEACH_NOT_FOUND'));
 
       await agentController.registerAgent(req, res, mockNext);
 
@@ -202,9 +200,7 @@ describe('Agent Controller Unit Tests', () => {
       const req = { body: requestBody };
       const res = mockResponse();
 
-      agentService.createAgent.mockRejectedValue(
-        new Error('BEACH_MAX_AGENTS')
-      );
+      agentService.createAgent.mockRejectedValue(new Error('BEACH_MAX_AGENTS'));
 
       await agentController.registerAgent(req, res, mockNext);
 
@@ -228,9 +224,7 @@ describe('Agent Controller Unit Tests', () => {
       const req = { body: requestBody };
       const res = mockResponse();
 
-      agentService.createAgent.mockRejectedValue(
-        new Error('Unexpected error')
-      );
+      agentService.createAgent.mockRejectedValue(new Error('Unexpected error'));
 
       await agentController.registerAgent(req, res, mockNext);
 
@@ -346,7 +340,9 @@ describe('Agent Controller Unit Tests', () => {
 
       await agentController.getAgentById(req, res, mockNext);
 
-      expect(agentService.getAgentById).toHaveBeenCalledWith(agentId.toString());
+      expect(agentService.getAgentById).toHaveBeenCalledWith(
+        agentId.toString()
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -408,9 +404,7 @@ describe('Agent Controller Unit Tests', () => {
       const req = { params: { agentId: agentId.toString() } };
       const res = mockResponse();
 
-      agentService.deleteAgent.mockRejectedValue(
-        new Error('Agent not found')
-      );
+      agentService.deleteAgent.mockRejectedValue(new Error('Agent not found'));
 
       await agentController.deleteAgent(req, res, mockNext);
 
@@ -482,7 +476,9 @@ describe('Agent Controller Unit Tests', () => {
       };
       const res = mockResponse();
 
-      agentService.reassignAgent.mockRejectedValue(new Error('Beach not found'));
+      agentService.reassignAgent.mockRejectedValue(
+        new Error('Beach not found')
+      );
 
       await agentController.reassignAgent(req, res, mockNext);
 

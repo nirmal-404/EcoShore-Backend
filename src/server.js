@@ -42,6 +42,7 @@ if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
 
 const app = express();
 
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(
   helmet.contentSecurityPolicy({

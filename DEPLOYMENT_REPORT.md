@@ -101,6 +101,7 @@ docker-compose up -d
 ```dotenv
 PORT=4000
 NODE_ENV=production
+FRONTEND_URL=https://eco-shore-frontend-livid.vercel.app
 MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/ecoshore
 JWT_SECRET=<32+ char secret>
 JWT_EXPIRES_IN=7d
@@ -123,6 +124,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 ## Security Checklist
 
 - [ ] `NODE_ENV=production`
+- [ ] `FRONTEND_URL` is set to exact frontend origin (no trailing slash)
 - [ ] `JWT_SECRET` is 32+ random characters
 - [ ] `.env` and `firebase-service-account.json` not committed to Git
 - [ ] MongoDB Atlas IP whitelist restricted to server IP

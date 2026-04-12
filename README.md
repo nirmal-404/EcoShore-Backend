@@ -565,10 +565,10 @@ Content-Type: multipart/form-data
 
 ## Deployment
 
-See [DEPLOYMENT_REPORT.md](DEPLOYMENT_REPORT.md) for deployment instructions.
+See [DEPLOYMENT_REPORT.md](DEPLOYMENT.md) for deployment instructions.
 
 ## Testing
 
-See [TESTING_REPORT.md](TESTING_REPORT.md) for testing instructions.
+See [TESTING_REPORT.md](testing.md) for testing instructions.
 
 fully completed

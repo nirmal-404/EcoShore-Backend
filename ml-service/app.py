@@ -179,8 +179,8 @@ def train():
 # ── Entry point ──────────────────────────────────────────────────────────── #
 
 if __name__ == "__main__":
-    port = int(os.getenv("ML_SERVICE_PORT", 5001))
-    debug = os.getenv("ML_DEBUG", "true").lower() == "true"
+    port = int(os.getenv("PORT", 5001))
+    debug = os.getenv("ML_DEBUG", "false").lower() == "true"
     print(f"[EcoShore ML] Starting on http://0.0.0.0:{port} — debug={debug}")
     print(f"[EcoShore ML] Model loaded: {predictor.model_loaded}")
     app.run(host="0.0.0.0", port=port, debug=debug)
